@@ -16,7 +16,6 @@
 
 package com.duckduckgo.downloads.impl
 
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -25,9 +24,11 @@ import android.os.Handler
 import android.os.Looper
 import androidx.annotation.AnyThread
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.FileProvider
 import com.duckduckgo.appbuildconfig.api.AppBuildConfig
 import com.duckduckgo.browser.api.BrowserLifecycleObserver
+import com.duckduckgo.common.utils.notification.checkPermissionAndNotify
 import com.duckduckgo.di.scopes.AppScope
 import com.duckduckgo.downloads.api.FileDownloadNotificationManager
 import com.squareup.anvil.annotations.ContributesBinding
@@ -52,7 +53,7 @@ private const val SUMMARY_ID = 0
 )
 @SingleInstanceIn(AppScope::class)
 class DefaultFileDownloadNotificationManager @Inject constructor(
-    private val notificationManager: NotificationManager,
+    private val notificationManager: NotificationManagerCompat,
     private val applicationContext: Context,
     private val appBuildConfig: AppBuildConfig,
 ) : FileDownloadNotificationManager, BrowserLifecycleObserver {
@@ -100,8 +101,8 @@ class DefaultFileDownloadNotificationManager @Inject constructor(
         }
 
         notificationManager.apply {
-            notify(downloadId.toInt(), notification)
-            notify(SUMMARY_ID, summary)
+            checkPermissionAndNotify(applicationContext, downloadId.toInt(), notification)
+            checkPermissionAndNotify(applicationContext, SUMMARY_ID, summary)
             groupNotificationsCounter.atomicUpdateAndGet { it.plus(downloadId to filename) }
         }
     }
@@ -128,7 +129,7 @@ class DefaultFileDownloadNotificationManager @Inject constructor(
 
         // we don't want to post any notification while the DDG application is closing
         if (applicationClosing.get()) return
-        notificationManager.notify(downloadId.toInt(), notification)
+        notificationManager.checkPermissionAndNotify(applicationContext, downloadId.toInt(), notification)
     }
 
     @AnyThread
@@ -158,7 +159,7 @@ class DefaultFileDownloadNotificationManager @Inject constructor(
 
         // we don't want to post any notification while the DDG application is closing
         if (applicationClosing.get()) return
-        notificationManager.notify(downloadId.toInt(), notification)
+        notificationManager.checkPermissionAndNotify(applicationContext, downloadId.toInt(), notification)
     }
 
     @AnyThread

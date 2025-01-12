@@ -20,8 +20,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import com.duckduckgo.app.global.DispatcherProvider
-import com.duckduckgo.appbuildconfig.api.AppBuildConfig
+import com.duckduckgo.common.utils.DispatcherProvider
+import com.duckduckgo.common.utils.extensions.registerExportedReceiver
 import com.duckduckgo.di.scopes.VpnScope
 import com.duckduckgo.mobile.android.vpn.service.VpnServiceCallbacks
 import com.duckduckgo.mobile.android.vpn.state.VpnStateMonitor.VpnStopReason
@@ -49,7 +49,8 @@ class ExceptionRulesDebugReceiver(
 
     init {
         kotlin.runCatching { context.unregisterReceiver(this) }
-        context.registerReceiver(this, IntentFilter(intentAction))
+        // needs to be exported because it's register on the :vpn process but can be intent-trigger from the :app process
+        context.registerExportedReceiver(this, IntentFilter(intentAction))
     }
 
     override fun onReceive(
@@ -79,29 +80,25 @@ class ExceptionRulesDebugReceiverRegister @Inject constructor(
     private val context: Context,
     private val exclusionRulesRepository: ExclusionRulesRepository,
     private val dispatchers: DispatcherProvider,
-    private val appBuildConfig: AppBuildConfig,
 ) : VpnServiceCallbacks {
 
     private val exceptionRulesSavedState = mutableListOf<AppTrackerExceptionRule>()
     private val shouldSaveRules = AtomicBoolean(true)
 
     override fun onVpnStarted(coroutineScope: CoroutineScope) {
-        // only for debug builds
-        if (appBuildConfig.isDebug) {
-            logcat { "Debug receiver ExceptionRulesDebugReceiver registered" }
+        logcat { "Debug receiver ExceptionRulesDebugReceiver registered" }
 
-            ExceptionRulesDebugReceiver(context) { intent ->
-                val appId = kotlin.runCatching { intent.getStringExtra("app") }.getOrNull()
-                val domain = kotlin.runCatching { intent.getStringExtra("domain") }.getOrNull()
+        ExceptionRulesDebugReceiver(context) { intent ->
+            val appId = kotlin.runCatching { intent.getStringExtra("app") }.getOrNull()
+            val domain = kotlin.runCatching { intent.getStringExtra("domain") }.getOrNull()
 
-                logcat { "Excluding $domain for app $appId" }
+            logcat { "Excluding $domain for app $appId" }
 
-                if (appId != null && domain != null) {
-                    coroutineScope.launch(dispatchers.io()) {
-                        // first save the current state, just once
-                        saveExceptionRulesState()
-                        exclusionRulesRepository.upsertRule(appId, domain)
-                    }
+            if (appId != null && domain != null) {
+                coroutineScope.launch(dispatchers.io()) {
+                    // first save the current state, just once
+                    saveExceptionRulesState()
+                    exclusionRulesRepository.upsertRule(appId, domain)
                 }
             }
         }
@@ -111,17 +108,20 @@ class ExceptionRulesDebugReceiverRegister @Inject constructor(
         coroutineScope: CoroutineScope,
         vpnStopReason: VpnStopReason,
     ) {
-        // only for debug builds
-        if (appBuildConfig.isDebug) {
-            logcat { "Debug receiver ExceptionRulesDebugReceiver restoring exception rules" }
+        if (shouldSaveRules.get()) {
+            // We haven't saved any rules yet - noop
+            logcat { "Debug receiver ExceptionRulesDebugReceiver will not restore rules. Rules size = ${exceptionRulesSavedState.size} " }
+            return
+        }
 
-            coroutineScope.launch(dispatchers.io()) {
-                exclusionRulesRepository.deleteAllTrackerRules()
-                exclusionRulesRepository.insertTrackerRules(exceptionRulesSavedState).also {
-                    exceptionRulesSavedState.clear()
-                }
-                shouldSaveRules.set(true)
+        logcat { "Debug receiver ExceptionRulesDebugReceiver restoring exception rules of size = ${exceptionRulesSavedState.size}" }
+
+        coroutineScope.launch(dispatchers.io()) {
+            exclusionRulesRepository.deleteAllTrackerRules()
+            exclusionRulesRepository.insertTrackerRules(exceptionRulesSavedState).also {
+                exceptionRulesSavedState.clear()
             }
+            shouldSaveRules.set(true)
         }
     }
 

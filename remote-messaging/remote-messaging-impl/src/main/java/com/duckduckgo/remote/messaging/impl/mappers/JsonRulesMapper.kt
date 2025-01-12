@@ -16,11 +16,10 @@
 
 package com.duckduckgo.remote.messaging.impl.mappers
 
-import com.duckduckgo.remote.messaging.impl.models.JsonMatchingAttribute
-import com.duckduckgo.remote.messaging.impl.models.JsonMatchingRule
-import com.duckduckgo.remote.messaging.impl.models.MATCHING_ATTR_INT_DEFAULT_VALUE
-import com.duckduckgo.remote.messaging.impl.models.MATCHING_ATTR_STRING_DEFAULT_VALUE
-import com.duckduckgo.remote.messaging.impl.models.MatchingAttribute
+import com.duckduckgo.remote.messaging.api.JsonMatchingAttribute
+import com.duckduckgo.remote.messaging.api.JsonToMatchingAttributeMapper
+import com.duckduckgo.remote.messaging.api.MatchingAttribute
+import com.duckduckgo.remote.messaging.impl.models.*
 import com.duckduckgo.remote.messaging.impl.models.toIntOrDefault
 import com.duckduckgo.remote.messaging.impl.models.toStringList
 import com.duckduckgo.remote.messaging.impl.models.toStringOrDefault
@@ -31,14 +30,14 @@ private val dateFormatter = SimpleDateFormat("yyyy-mm-dd")
 
 @Suppress("UNCHECKED_CAST")
 private val localeMapper: (JsonMatchingAttribute) -> MatchingAttribute = { jsonMatchingAttribute ->
-    MatchingAttribute.Locale(
+    Locale(
         value = jsonMatchingAttribute.value.toStringList(),
         fallback = jsonMatchingAttribute.fallback,
     )
 }
 
 private val osApiMapper: (JsonMatchingAttribute) -> MatchingAttribute = { jsonMatchingAttribute ->
-    MatchingAttribute.Api(
+    Api(
         value = jsonMatchingAttribute.value.toIntOrDefault(MATCHING_ATTR_INT_DEFAULT_VALUE),
         min = jsonMatchingAttribute.min.toIntOrDefault(MATCHING_ATTR_INT_DEFAULT_VALUE),
         max = jsonMatchingAttribute.max.toIntOrDefault(MATCHING_ATTR_INT_DEFAULT_VALUE),
@@ -47,7 +46,7 @@ private val osApiMapper: (JsonMatchingAttribute) -> MatchingAttribute = { jsonMa
 }
 
 private val webViewMapper: (JsonMatchingAttribute) -> MatchingAttribute = { jsonMatchingAttribute ->
-    MatchingAttribute.WebView(
+    WebView(
         value = jsonMatchingAttribute.value.toStringOrDefault(MATCHING_ATTR_STRING_DEFAULT_VALUE),
         min = jsonMatchingAttribute.min.toStringOrDefault(MATCHING_ATTR_STRING_DEFAULT_VALUE),
         max = jsonMatchingAttribute.max.toStringOrDefault(MATCHING_ATTR_STRING_DEFAULT_VALUE),
@@ -57,21 +56,21 @@ private val webViewMapper: (JsonMatchingAttribute) -> MatchingAttribute = { json
 
 @Suppress("UNCHECKED_CAST")
 private val flavorMapper: (JsonMatchingAttribute) -> MatchingAttribute = { jsonMatchingAttribute ->
-    MatchingAttribute.Flavor(
+    Flavor(
         value = jsonMatchingAttribute.value.toStringList(),
         fallback = jsonMatchingAttribute.fallback,
     )
 }
 
 private val appIdMapper: (JsonMatchingAttribute) -> MatchingAttribute = { jsonMatchingAttribute ->
-    MatchingAttribute.AppId(
+    AppId(
         value = jsonMatchingAttribute.value.toStringOrDefault(MATCHING_ATTR_STRING_DEFAULT_VALUE),
         fallback = jsonMatchingAttribute.fallback,
     )
 }
 
 private val appVersionMapper: (JsonMatchingAttribute) -> MatchingAttribute = { jsonMatchingAttribute ->
-    MatchingAttribute.AppVersion(
+    AppVersion(
         value = jsonMatchingAttribute.value.toStringOrDefault(MATCHING_ATTR_STRING_DEFAULT_VALUE),
         min = jsonMatchingAttribute.min.toStringOrDefault(MATCHING_ATTR_STRING_DEFAULT_VALUE),
         max = jsonMatchingAttribute.max.toStringOrDefault(MATCHING_ATTR_STRING_DEFAULT_VALUE),
@@ -80,63 +79,63 @@ private val appVersionMapper: (JsonMatchingAttribute) -> MatchingAttribute = { j
 }
 
 private val atbMapper: (JsonMatchingAttribute) -> MatchingAttribute = { jsonMatchingAttribute ->
-    MatchingAttribute.Atb(
+    Atb(
         value = jsonMatchingAttribute.value.toStringOrDefault(MATCHING_ATTR_STRING_DEFAULT_VALUE),
         fallback = jsonMatchingAttribute.fallback,
     )
 }
 
 private val appAtbMapper: (JsonMatchingAttribute) -> MatchingAttribute = { jsonMatchingAttribute ->
-    MatchingAttribute.AppAtb(
+    AppAtb(
         value = jsonMatchingAttribute.value.toStringOrDefault(MATCHING_ATTR_STRING_DEFAULT_VALUE),
         fallback = jsonMatchingAttribute.fallback,
     )
 }
 
 private val searchAtbMapper: (JsonMatchingAttribute) -> MatchingAttribute = { jsonMatchingAttribute ->
-    MatchingAttribute.SearchAtb(
+    SearchAtb(
         value = jsonMatchingAttribute.value.toStringOrDefault(MATCHING_ATTR_STRING_DEFAULT_VALUE),
         fallback = jsonMatchingAttribute.fallback,
     )
 }
 
 private val expVariantMapper: (JsonMatchingAttribute) -> MatchingAttribute = { jsonMatchingAttribute ->
-    MatchingAttribute.ExpVariant(
+    ExpVariant(
         value = jsonMatchingAttribute.value.toStringOrDefault(MATCHING_ATTR_STRING_DEFAULT_VALUE),
         fallback = jsonMatchingAttribute.fallback,
     )
 }
 
 private val installedGPlayMapper: (JsonMatchingAttribute) -> MatchingAttribute = { jsonMatchingAttribute ->
-    MatchingAttribute.InstalledGPlay(
+    InstalledGPlay(
         value = jsonMatchingAttribute.value as Boolean,
         fallback = jsonMatchingAttribute.fallback,
     )
 }
 
 private val defaultBrowserMapper: (JsonMatchingAttribute) -> MatchingAttribute = { jsonMatchingAttribute ->
-    MatchingAttribute.DefaultBrowser(
+    DefaultBrowser(
         value = jsonMatchingAttribute.value as Boolean,
         fallback = jsonMatchingAttribute.fallback,
     )
 }
 
 private val emailEnabledMapper: (JsonMatchingAttribute) -> MatchingAttribute = { jsonMatchingAttribute ->
-    MatchingAttribute.EmailEnabled(
+    EmailEnabled(
         value = jsonMatchingAttribute.value as Boolean,
         fallback = jsonMatchingAttribute.fallback,
     )
 }
 
 private val widgetAddedMapper: (JsonMatchingAttribute) -> MatchingAttribute = { jsonMatchingAttribute ->
-    MatchingAttribute.WidgetAdded(
+    WidgetAdded(
         value = jsonMatchingAttribute.value as Boolean,
         fallback = jsonMatchingAttribute.fallback,
     )
 }
 
 private val searchCountMapper: (JsonMatchingAttribute) -> MatchingAttribute = { jsonMatchingAttribute ->
-    MatchingAttribute.SearchCount(
+    SearchCount(
         value = jsonMatchingAttribute.value.toIntOrDefault(MATCHING_ATTR_INT_DEFAULT_VALUE),
         min = jsonMatchingAttribute.min.toIntOrDefault(MATCHING_ATTR_INT_DEFAULT_VALUE),
         max = jsonMatchingAttribute.max.toIntOrDefault(MATCHING_ATTR_INT_DEFAULT_VALUE),
@@ -145,7 +144,7 @@ private val searchCountMapper: (JsonMatchingAttribute) -> MatchingAttribute = { 
 }
 
 private val bookmarksMapper: (JsonMatchingAttribute) -> MatchingAttribute = { jsonMatchingAttribute ->
-    MatchingAttribute.Bookmarks(
+    Bookmarks(
         value = jsonMatchingAttribute.value.toIntOrDefault(MATCHING_ATTR_INT_DEFAULT_VALUE),
         min = jsonMatchingAttribute.min.toIntOrDefault(MATCHING_ATTR_INT_DEFAULT_VALUE),
         max = jsonMatchingAttribute.max.toIntOrDefault(MATCHING_ATTR_INT_DEFAULT_VALUE),
@@ -154,7 +153,7 @@ private val bookmarksMapper: (JsonMatchingAttribute) -> MatchingAttribute = { js
 }
 
 private val favoritesMapper: (JsonMatchingAttribute) -> MatchingAttribute = { jsonMatchingAttribute ->
-    MatchingAttribute.Favorites(
+    Favorites(
         value = jsonMatchingAttribute.value.toIntOrDefault(MATCHING_ATTR_INT_DEFAULT_VALUE),
         min = jsonMatchingAttribute.min.toIntOrDefault(MATCHING_ATTR_INT_DEFAULT_VALUE),
         max = jsonMatchingAttribute.max.toIntOrDefault(MATCHING_ATTR_INT_DEFAULT_VALUE),
@@ -163,14 +162,14 @@ private val favoritesMapper: (JsonMatchingAttribute) -> MatchingAttribute = { js
 }
 
 private val appThemeMapper: (JsonMatchingAttribute) -> MatchingAttribute = { jsonMatchingAttribute ->
-    MatchingAttribute.AppTheme(
+    AppTheme(
         value = jsonMatchingAttribute.value.toStringOrDefault(MATCHING_ATTR_STRING_DEFAULT_VALUE),
         fallback = jsonMatchingAttribute.fallback,
     )
 }
 
 private val daysSinceInstalledMapper: (JsonMatchingAttribute) -> MatchingAttribute = { jsonMatchingAttribute ->
-    MatchingAttribute.DaysSinceInstalled(
+    DaysSinceInstalled(
         value = jsonMatchingAttribute.value.toIntOrDefault(MATCHING_ATTR_INT_DEFAULT_VALUE),
         min = jsonMatchingAttribute.min.toIntOrDefault(MATCHING_ATTR_INT_DEFAULT_VALUE),
         max = jsonMatchingAttribute.max.toIntOrDefault(MATCHING_ATTR_INT_DEFAULT_VALUE),
@@ -179,13 +178,14 @@ private val daysSinceInstalledMapper: (JsonMatchingAttribute) -> MatchingAttribu
 }
 
 private val daysUsedSinceMapper: (JsonMatchingAttribute) -> MatchingAttribute = { jsonMatchingAttribute ->
-    MatchingAttribute.DaysUsedSince(
+    DaysUsedSince(
         since = dateFormatter.parse(jsonMatchingAttribute.since as String)!!,
         value = jsonMatchingAttribute.value.toIntOrDefault(MATCHING_ATTR_INT_DEFAULT_VALUE),
         fallback = jsonMatchingAttribute.fallback,
     )
 }
 
+// plugin point ?
 private val attributesMappers = mapOf(
     Pair("locale", localeMapper),
     Pair("osApi", osApiMapper),
@@ -209,14 +209,31 @@ private val attributesMappers = mapOf(
     Pair("daysUsedSince", daysUsedSinceMapper),
 )
 
-fun List<JsonMatchingRule>.mapToMatchingRules(): Map<Int, List<MatchingAttribute>> = this.map {
-    Pair(it.id, it.attributes.map { attrs -> attrs.map() })
-}.toMap()
+fun List<JsonMatchingRule>.mapToMatchingRules(
+    matchingAttributeMappers: Set<JsonToMatchingAttributeMapper>,
+): List<Rule> = this.map {
+    Rule(
+        id = it.id,
+        targetPercentile = it.targetPercentile.map(),
+        attributes = it.attributes?.map { attrs -> attrs.map(matchingAttributeMappers) }.orEmpty(),
+    )
+}
 
-private fun Map.Entry<String, JsonMatchingAttribute>.map(): MatchingAttribute {
+private fun JsonTargetPercentile?.map(): TargetPercentile? {
+    if (this == null) return null
+    return TargetPercentile(
+        before = this.before ?: 1f,
+    )
+}
+
+private fun Map.Entry<String, JsonMatchingAttribute>.map(matchingAttributeMappers: Set<JsonToMatchingAttributeMapper>): MatchingAttribute {
     return runCatching {
-        attributesMappers[this.key]?.invoke(this.value) ?: MatchingAttribute.Unknown(this.value.fallback)
+        matchingAttributeMappers.forEach {
+            val matchingAttribute = it.map(this.key, this.value)
+            if (matchingAttribute != null) return@runCatching matchingAttribute
+        }
+        attributesMappers[this.key]?.invoke(this.value) ?: Unknown(this.value.fallback)
     }.onFailure {
         Timber.i("RMF: error $it")
-    }.getOrDefault(MatchingAttribute.Unknown(this.value.fallback))
+    }.getOrDefault(Unknown(this.value.fallback))
 }

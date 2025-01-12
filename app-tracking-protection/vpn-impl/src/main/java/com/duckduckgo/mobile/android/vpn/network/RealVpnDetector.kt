@@ -27,17 +27,19 @@ import javax.inject.Inject
 
 @SingleInstanceIn(AppScope::class)
 @ContributesBinding(AppScope::class)
-class RealVpnDetector @Inject constructor(
+class RealExternalVpnDetector @Inject constructor(
     private val context: Context,
     private val vpnFeaturesRegistry: VpnFeaturesRegistry,
-) : VpnDetector {
+) : ExternalVpnDetector {
 
-    override fun isVpnDetected(): Boolean {
+    override suspend fun isExternalVpnDetected(): Boolean {
         // if we're the ones using the VPN, no VPN is detected
-        if (vpnFeaturesRegistry.isAnyFeatureRegistered()) return false
+        if (vpnFeaturesRegistry.isAnyFeatureRunning()) return false
 
-        val connectivityManager = context.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetwork = connectivityManager.activeNetwork
-        return connectivityManager.getNetworkCapabilities(activeNetwork)?.hasTransport(NetworkCapabilities.TRANSPORT_VPN) ?: false
+        return runCatching {
+            val connectivityManager = context.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val activeNetwork = connectivityManager.activeNetwork
+            connectivityManager.getNetworkCapabilities(activeNetwork)?.hasTransport(NetworkCapabilities.TRANSPORT_VPN) ?: false
+        }.getOrDefault(false)
     }
 }

@@ -19,17 +19,16 @@ package com.duckduckgo.mobile.android.vpn.ui.notification
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.duckduckgo.app.CoroutineTestRule
-import com.duckduckgo.app.global.formatters.time.DatabaseDateFormatter
-import com.duckduckgo.mobile.android.vpn.dao.VpnTrackerDao
+import com.duckduckgo.common.test.CoroutineTestRule
+import com.duckduckgo.common.utils.formatters.time.DatabaseDateFormatter
 import com.duckduckgo.mobile.android.vpn.model.TrackingApp
 import com.duckduckgo.mobile.android.vpn.model.VpnTracker
 import com.duckduckgo.mobile.android.vpn.stats.AppTrackerBlockingStatsRepository
 import com.duckduckgo.mobile.android.vpn.stats.RealAppTrackerBlockingStatsRepository
 import com.duckduckgo.mobile.android.vpn.store.VpnDatabase
+import com.duckduckgo.mobile.android.vpn.trackers.AppTrackerEntity
 import com.duckduckgo.mobile.android.vpn.ui.notification.DeviceShieldNotificationFactory.DeviceShieldNotification
-import com.jakewharton.threetenabp.AndroidThreeTen
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import java.time.LocalDateTime
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.*
@@ -37,9 +36,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.threeten.bp.LocalDateTime
 
-@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class DeviceShieldWeeklyNotificationFactoryTest {
 
@@ -47,18 +44,15 @@ class DeviceShieldWeeklyNotificationFactoryTest {
     val coroutineTestRule: CoroutineTestRule = CoroutineTestRule()
 
     private lateinit var db: VpnDatabase
-    private lateinit var vpnTrackerDao: VpnTrackerDao
     private lateinit var appTrackerBlockingStatsRepository: AppTrackerBlockingStatsRepository
 
     private lateinit var factory: DeviceShieldNotificationFactory
 
     @Before
     fun before() {
-        AndroidThreeTen.init(InstrumentationRegistry.getInstrumentation().targetContext)
         db = Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getInstrumentation().targetContext, VpnDatabase::class.java)
             .allowMainThreadQueries()
             .build()
-        vpnTrackerDao = db.vpnTrackerDao()
         appTrackerBlockingStatsRepository = RealAppTrackerBlockingStatsRepository(db, coroutineTestRule.testDispatcherProvider)
 
         factory =
@@ -190,7 +184,18 @@ class DeviceShieldWeeklyNotificationFactoryTest {
             companyDisplayName = company,
             trackingApp = appContainingTracker,
         )
-        vpnTrackerDao.insert(tracker)
+        val trackers = listOf(tracker)
+        appTrackerBlockingStatsRepository.insert(trackers)
+        db.vpnAppTrackerBlockingDao().insertTrackerEntities(trackers.map { it.asEntity() })
+    }
+
+    private fun VpnTracker.asEntity(): AppTrackerEntity {
+        return AppTrackerEntity(
+            trackerCompanyId = this.trackerCompanyId,
+            entityName = "name",
+            score = 0,
+            signals = emptyList(),
+        )
     }
 
     private fun defaultApp() = TrackingApp("app.foo.com", "Foo App")
@@ -200,5 +205,5 @@ class DeviceShieldWeeklyNotificationFactoryTest {
 }
 
 private fun DeviceShieldNotification.assertTitleEquals(expected: String) {
-    assertEquals("Given notification titles do not match", expected, this.title.toString())
+    assertEquals("Given notification titles do not match", expected, this.text.toString())
 }

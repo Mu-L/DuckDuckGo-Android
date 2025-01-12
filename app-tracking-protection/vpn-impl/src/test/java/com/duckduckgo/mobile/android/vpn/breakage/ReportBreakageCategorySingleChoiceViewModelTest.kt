@@ -17,10 +17,10 @@
 package com.duckduckgo.mobile.android.vpn.breakage
 
 import app.cash.turbine.test
-import com.duckduckgo.app.CoroutineTestRule
+import com.duckduckgo.common.test.CoroutineTestRule
 import com.duckduckgo.mobile.android.vpn.breakage.ReportBreakageCategorySingleChoiceViewModel.Command
+import com.duckduckgo.mobile.android.vpn.ui.AppBreakageCategory
 import kotlin.time.ExperimentalTime
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -31,7 +31,6 @@ import org.junit.Rule
 import org.junit.Test
 
 @ExperimentalTime
-@ExperimentalCoroutinesApi
 class ReportBreakageCategorySingleChoiceViewModelTest {
 
     @get:Rule
@@ -45,6 +44,16 @@ class ReportBreakageCategorySingleChoiceViewModelTest {
     @Before
     fun setup() {
         viewModel = ReportBreakageCategorySingleChoiceViewModel()
+        viewModel.setCategories(
+            listOf(
+                AppBreakageCategory("zero", "0"),
+                AppBreakageCategory("one", "1"),
+                AppBreakageCategory("two", "2"),
+                AppBreakageCategory("three", "3"),
+                AppBreakageCategory("four", "4"),
+                AppBreakageCategory("five", "5"),
+            ),
+        )
     }
 
     @Test
@@ -89,8 +98,7 @@ class ReportBreakageCategorySingleChoiceViewModelTest {
         val indexSelected = 0
         selectAndAcceptCategory(indexSelected)
 
-        val categoryExpected = viewModel.shuffledCategories[indexSelected]
-        assertEquals(categoryExpected, viewState.categorySelected)
+        assertEquals(AppBreakageCategory("zero", "0"), viewState.categorySelected)
     }
 
     @Test

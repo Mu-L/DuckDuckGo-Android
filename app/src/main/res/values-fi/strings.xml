@@ -20,7 +20,7 @@
     <string name="appName" translatable="false">DuckDuckGo</string>
     <string name="appDescription" translatable="false">DuckDuckGo</string>
     <string name="duckDuckGoLogoDescription">DuckDuckGo-logo</string>
-    <string name="duckDuckGoPrivacySimplified">Itsestään selvää tietosuojaa</string>
+    <string name="duckDuckGoTagline">Tietosuoja on ehdoton prioriteettimme.</string>
     <string name="yes">Kyllä</string>
     <string name="no">Ei</string>
     <string name="open">Avaa</string>
@@ -86,6 +86,10 @@
     <!-- AutoComplete Suggestions -->
     <string name="editQueryBeforeSubmitting">Muokkaa kyselyä ennen hakua</string>
     <string name="settingsAutocompleteEnabled">Näytä automaattisen täydennyksen ehdotukset</string>
+    <string name="autocompleteRemoveItemTitle">Poistetaanko hakuehdotus?</string>
+    <string name="autocompleteRemoveItemCancel">Peruuta</string>
+    <string name="autocompleteRemoveItemRemove">Poista</string>
+    <string name="autocompleteSwitchToTab" instruction="Placeholder is a website">Vaihda välilehdelle · %1$s</string>
 
     <!-- Opening external apps -->
     <string name="openExternalApp">Avaa ulkoinen sovellus</string>
@@ -108,6 +112,8 @@
     <string name="tabClosed">Välilehti suljettu</string>
     <string name="tabClosedUndo">Kumoa</string>
     <string name="downloadsMenuItemTitle">Lataukset</string>
+    <string name="tabSwitcherListViewMenu">Luettelonäkymä</string>
+    <string name="tabSwitcherGridViewMenu">Ruudukkonäkymä</string>
 
     <!-- Fire -->
     <string name="fireMenu">Poista tiedot</string>
@@ -119,6 +125,7 @@
     <string name="settingsActivityTitle">Asetukset</string>
     <string name="settingsMenuItemTitle">Asetukset</string>
     <string name="settingsHeadingPrivacy">Tietosuoja</string>
+    <string name="settingsHeadingPrivacyProtections">Yksityisyyden suoja</string>
     <string name="settingsHeadingAppearance">Ulkoasu</string>
     <string name="settingsHeadingCustomize">Mukauta</string>
     <string name="settingsHeadingAbout">Tietoa meistä</string>
@@ -128,6 +135,7 @@
     <string name="settingsEmailProtectionTitle">Sähköpostisuojaus</string>
     <string name="settingsEmailProtectionSubtitle">Estä sähköpostiseuraajat ja piilota osoitteesi</string>
     <string name="settingsHeadingMore">Lisää DuckDuckGolta</string>
+    <string name="settingsHeadingNextSteps">Seuraavat vaiheet</string>
     <string name="settingsLightTheme">Vaalea</string>
     <string name="settingsTheme">Teema</string>
     <string name="settingsDarkTheme">Tumma</string>
@@ -138,11 +146,74 @@
     <string name="settingsAppLinksAskEveryTime">Kysy joka kerta</string>
     <string name="settingsAppLinksAlways">Aina</string>
     <string name="settingsAppLinksNever">Ei koskaan</string>
+    <string name="settingsTitleNotifications">Ilmoitukset</string>
+    <string name="settingsSubtitleNotificationsDisabled">Pois käytöstä</string>
+    <string name="settingsSubtitleNotificationsEnabled">Käytössä</string>
+    <string name="settingsDefaultBrowserTitle">Oletusselain</string>
+    <string name="settingsDefaultBrowserSetDescription">DuckDuckGo on oletusselaimesi</string>
+    <string name="settingsDefaultBrowserNotSetDescription">Tee DuckDuckGo:sta oletusselain</string>
+    <string name="settingsPrivateSearchTitle">Yksityinen haku</string>
+    <string name="settingsGeneral" instruction="List item for general settings">Yleistä</string>
+    <string name="settingsPrivateSearchDescription">Oletusarvoisesti käytössä</string>
+    <string name="settingsWebTrackingProtectionTitle">Verkkoseurannan suojaus</string>
+    <string name="settingsWebTrackingProtectionDescription">Oletusarvoisesti käytössä</string>
+    <string name="settingsHeadingSettings">Asetukset</string>
+    <string name="settingsHeadingMainSettings">Pääasetukset</string>
+    <string name="settingsPermissionsSetting">Käyttöoikeudet</string>
+    <string name="settingsSyncSetting">Synkronoi ja varmuuskopioi</string>
+    <string name="settingsFireButton">Fire-painike</string>
+    <string name="settingsDataClearing">Datan tyhjentäminen</string>
+    <string name="settingsAddWidget">Lisää widget aloitusnäyttöön</string>
+    <string name="settingsAddressBarPosition">Aseta osoitekentän sijainti</string>
+    <string name="settingsEnableVoiceSearch">Ota käyttöön äänihaku</string>
+    <string name="settingsDDGOnOtherPlatforms">DuckDuckGo muilla alustoilla</string>
+
+    <!-- Private Search -->
+    <string name="privateSearchActivityTitle">Yksityinen haku</string>
+    <string name="privateSearchTitle">Private Search on käytössä</string>
+    <string name="privateSearchDescription">DuckDuckGo Private Search on oletushakukoneesi, ja sen avulla voit hakea netistä ilman, että sinua seurataan.</string>
+    <string name="privateSearchHeadingSearchSettings">Hakuasetukset</string>
+    <string name="privateSearchMoreSearchSettingsPrimaryText">Lisää hakuasetuksia</string>
+    <string name="privateSearchMoreSearchSettingsSecondaryText">Mukauta haun kieli, alue ja muuta</string>
+    <string name="privateSearchMoreSearchSettingsTitle">Lisää hakuasetuksia</string>
+    <string name="privateSearchAutocompleteToggle">Hakuehdotukset</string>
+    <string name="privateSearchAutocompleteHint">Näytä hakuehdotuksia kirjoittaessasi, mukaan lukien kirjanmerkit. Kaikki haut ovat yksityisiä.</string>
+    <string name="privateSearchAutocompleteRecentlyVisitedSitesToggle">Viimeksi käydyt sivustot</string>
+    <string name="privateSearchAutocompleteRecentlyVisitedSitesHint">Näytä viimeksi käydyt sivustot hakuehdotuksissa. Viimeksi käydyt sivustot ovat yksityisiä, tallennetaan vain laitteeseen ja ne voidaan tyhjentää Fire Buttonilla.</string>
+    <string name="improvedAutoCompleteIAMContent">Automaattisen täydennyksen ehdotukset sisältävät nyt äskettäin vieraillut sivustot. Voit poistaa tämän käytöstä asetusten kautta tai tyhjentää milloin tahansa 🔥 Fire Buttonilla.</string>
+    <string name="improvedAutoCompleteIAMTitle">Sama tietoja,\nparempia hakuehdotuksia!</string>
+    <string name="openAutoCompleteSettings">Avaa asetukset</string>
+
+    <!-- General Settings -->
+    <string name="generalSettingsActivityTitle" instruction="Title of the general settings screen">Yleistä</string>
+
+    <!-- Web Tracking Protection -->
+    <string name="webTrackingProtectionActivityTitle">Verkkoseurannan suojaus</string>
+    <string name="webTrackingProtectionLearnMoreTitle">Verkkoseurannan suojaus</string>
+    <string name="webTrackingProtectionTitle">Verkkoseurantasuojaus on käytössä</string>
+    <string name="webTrackingProtectionDescription"><![CDATA[DuckDuckGo ei koskaan seuraa sinua. Pyrimme suojaamaan yksityisyyttäsi mahdollisimman paljon. Ylläpidämme ja kehitämme suojaustasoja jatkuvasti pysyäksemme uusien seurantamenetelmien vauhdissa ja tarjotaksemme monia suojauksia, joita muut selaimet eivät tarjoa oletuksena. <u><a href=\"\">Lisätietoja</a><u/>]]></string>
+    <string name="webTrackingProtectionDescriptionNew"><![CDATA[DuckDuckGo estää automaattisesti piilotetut jäljittäjät, kun selaat verkkoa.\n<a href=\"\">Lue lisää</a>]]></string>
+
+    <!-- Cookie Pop-Up Protection -->
+    <string name="cookiePopupProtectionTitle">Evästeiden ponnahdusikkuna -suojaus</string>
+    <string name="cookiePopupProtectionDescription">Karkota ponnahdusikkunat ja minimoi evästeet</string>
+    <string name="cookiePopupProtectionEnabled">Käytössä</string>
+
+    <!-- Fire Button -->
+    <string name="fireButtonActivityTitle">Fire-painike</string>
+    <string name="dataClearingActivityTitle">Datan tyhjentäminen</string>
+
+    <!-- Permissions -->
+    <string name="permissionsActivityTitle">Käyttöoikeudet</string>
+
+    <!-- Appearance -->
+    <string name="appearanceActivityTitle">Ulkoasu</string>
 
     <!-- Settings - Automatically clearing data -->
     <string name="settingsAutomaticallyClearingDialogSave">Tallenna</string>
 
     <string name="settingsAutomaticallyClearWhat">Tyhjennä automaattisesti…</string>
+    <string name="settingsAutomaticallyClearData">Tyhjennä tiedot automaattisesti...</string>
     <string name="settingsAutomaticallyClearWhatDialogTitle">Tyhjennä automaattisesti…</string>
     <string name="settingsAutomaticallyClearWhatOptionNone">Ei mitään</string>
     <string name="settingsAutomaticallyClearWhatOptionTabs">Välilehdet</string>
@@ -159,9 +230,10 @@
 
     <!-- About Activity -->
     <string name="aboutActivityTitle">Tietoa DuckDuckGo:sta</string>
-    <string name="aboutDescription">
-        DuckDuckGo asettaa uudet standardit luottamukselle verkossa.\n\nDuckDuckGo-tietosuojaselain tarjoaa kaikki keskeiset tietosuojaominaisuudet nettihakujesi ja -selailusi turvaksi, kuten seurantapalvelinten eston, älykkäämmän salauksen ja yksityisen DuckDuckGo-haun.\n\nInternetin ei pitäisi tuntua karmivalta paikalta ja nettiyksityisyyden pitäisi olla yhtä helppoa kuin verhojen vetäminen ikkunan eteen.</string>
-    <string name="aboutMoreLink">Lisätietoa: duckduckgo.com/about</string>
+    <string name="aboutActivityTitleNew">Tietoa meistä</string>
+    <string name="aboutHeader">Tervetuloa Duckin puolelle!</string>
+    <string name="aboutDescription">DuckDuckGo on vuonna 2008 perustettu riippumaton internetissä tietosuojaa tarjoava yritys niille, jotka ovat kyllästyneet siihen, että heitä seurataan netissä, ja haluavat yksinkertaisen ratkaisun. Olemme todiste siitä, että voit saada todellista tietosuojaa verkossa ilman kompromisseja.\n\nDuckDuckGo-selaimessa on kaikki parhaiden selainten ominaisuudet, kuten kirjanmerkit, välilehdet, salasanat ja paljon muuta, sekä yli <annotation type="privacy_protection_link">kymmenkunta tehokasta tietosuojausta, joita</annotation> ei ole oletuksena useimmissa suosituissa selaimissa. Tämä ainutlaatuisen kattava tietosuoja auttaa turvaamaan haut, selaamisen, sähköpostin lähettämiseen ja muun toimintasi verkossa.\n\nTietosuojamme toimivat, vaikka et tietäisi mitään teknisistä yksityiskohdista tai osaisi käsitellä monimutkaisia asetuksia. Sinun tarvitsee vain vaihtaa selaimesi DuckDuckGohon kaikilla laitteillasi, ja saat tietosuojan oletuksena.\n\nJos kuitenkin haluat kurkistaa konepellin alle, lisätietoja DuckDuckGon tietosuojan toiminnasta on <annotation type="learn_more_link">ohjesivuillamme</annotation>.</string>
+    <string name="aboutDescriptionNew">DuckDuckGo on vuonna 2008 perustettu riippumaton internetin tietosuoja-alan yritys kaikille, jotka ovat kyllästyneet siihen, että heitä seurataan verkossa, ja haluavat helpon ratkaisun. Olemme todiste siitä, että voit saada todellista tietosuojaa verkossa ilman kompromisseja.\n\nDuckDuckGo-selaimessa on kaikki selainten perusominaisuudet, kuten kirjanmerkit, välilehdet ja salasanat, sekä yli <annotation type="privacy_protection_link">kymmenen tehokasta tietosuojausta</annotation>, joita ei ole oletuksena useimmissa suosituissa selaimissa. Tämä ainutlaatuisen kattava tietosuojapaketti auttaa suojaamaan verkkoaktiviteettisi, kuten hakemisen, selaamisen ja sähköpostin lähettämisen.\n\nTietosuojamme toimivat, vaikka et tietäisi mitään teknisistä yksityiskohdista tai osaisi käsitellä monimutkaisia asetuksia. Sinun tarvitsee vain vaihtaa selaimesi DuckDuckGohon kaikissa laitteissasi, ja saat tietosuojan oletuksena.\n\nJos kuitenkin haluat kurkistaa konepellin alle, löydät lisätietoja DuckDuckGon tietosuojan toiminnasta on <annotation type="learn_more_link">ohjesivuiltamme</annotation>.</string>
     <string name="no_suggestions">Ei ehdotuksia</string>
 
     <!-- Broken Site Activity -->
@@ -171,48 +243,27 @@
     <string name="brokenSitesCategoriesTitle">Kuvaile mitä tapahtui</string>
     <string name="brokenSitesCategoriesHint">Kuvaile mitä tapahtui</string>
     <string name="brokenSiteSubmitButton">Lähetä raportti</string>
-    <string name="brokenSiteDescription">Anonyymin raportin lähettäminen toimimattomasta sivustosta auttaa meitä korjaamaan nämä ongelmat ja parantamaan sovellusta.</string>
+    <string name="brokenSiteDescription">Anonyymin raportin lähettäminen toimimattomasta sivustosta auttaa meitä parantamaan sovellusta.</string>
 
-    <string name="brokenSiteCategoryImages">Kuvat eivät latautuneet</string>
-    <string name="brokenSiteCategoryPaywall">Sivusto pyysi minua poistamaan käytöstä</string>
-    <string name="brokenSiteCategoryComments">Kommentit eivät latautuneet</string>
-    <string name="brokenSiteCategoryVideos">Videoita ei toistettu</string>
-    <string name="brokenSiteCategoryLinks">Linkit tai painikkeet eivät toimineet</string>
-    <string name="brokenSiteCategoryContent">Sisältöä puuttuu</string>
-    <string name="brokenSiteCategoryLogin">En pysty kirjautumaan sisään</string>
-    <string name="brokenSiteCategoryUnsupported">Selain ei ole yhteensopiva</string>
+    <string name="brokenSiteCategoryBlocked">Sivusto estetty tai ei latautunut</string>
+    <string name="brokenSiteCategoryLayout">Sivuston asettelu rikki</string>
+    <string name="brokenSiteCategoryEmptySpaces">Sivustolla on suuria tyhjiä tiloja</string>
+    <string name="brokenSiteCategoryShopping">Ei voi maksaa, siirtyä kassalle tai ostaa</string>
+    <string name="brokenSiteCategoryPaywall">Sivusto pyysi minua poistamaan mainosten eston</string>
+    <string name="brokenSiteCategoryComments">Kommentit, arvostelut tai chatit eivät latautuneet</string>
+    <string name="brokenSiteCategoryVideos">Videota ei toistettu se ei latautunut</string>
+    <string name="brokenSiteCategoryLogin">Ei voi kirjautua sisään/rekisteröityä</string>
     <string name="brokenSiteCategoryOther">Jotain muuta</string>
+    <string name="brokenSiteDescriptionTextInputHint">Jaa lisää tietoja (valinnainen)</string>
+    <string name="brokenSiteDescriptionCaption">Mitä tapahtui? Mitä olisi pitänyt tapahtua? Auttoiko estojen poistaminen käytöstä?</string>
 
-    <!-- Bookmarks Activity -->
-    <string name="bookmarksMenuTitle">Kirjanmerkit</string>
-    <string name="bookmarksActivityTitle">Kirjanmerkit</string>
-    <string name="noBookmarks">Kirjanmerkkejä ei ole vielä lisätty</string>
-    <string name="bookmarkOverflowContentDescription" instruction="Placeholder is the title of the bookmark">Lisää vaihtoehtoja kirjanmerkille %1$s</string>
-    <string name="bookmarkDeleteConfirmationMessage" instruction="Placeholder is the title of the bookmark">Poistettiin &lt;b&gt;%1$s&lt;/b&gt;</string>
-    <string name="exportBookmarksMenu">Vie</string>
-    <string name="exportBookmarksEmpty">Sinulla ei ole kirjanmerkkejä, mitään ei viedä.</string>
-    <string name="exportBookmarksError">Kirjanmerkkejä ei voitu viedä, jokin meni vikaan</string>
-    <string name="exportBookmarksSuccess">Kaikki kirjanmerkit on viety</string>
-    <string name="importBookmarksMenu">Tuo</string>
-    <string name="importBookmarksFileTitle">Valitse kirjanmerkkitiedosto tuotavaksi</string>
-    <string name="importBookmarksError">Kirjanmerkkejä ei voitu tuoda, jokin meni vikaan</string>
-    <string name="importBookmarksEmpty">Tiedostossa ei ole tuotavia kirjanmerkkejä</string>
-    <string name="importBookmarksSuccess" instruction="Placeholder is a number">%1$d kirjanmerkkiä tuotu</string>
-    <string name="savedSiteDialogTitleHint">Otsikko</string>
-    <string name="savedSiteDialogUrlHint">URL</string>
-    <string name="savedSiteDialogTitleEdit">Muokkaa</string>
-    <string name="bookmarksSectionTitle">Kirjanmerkit</string>
-    <string name="favoritesSectionTitle">Suosikit</string>
-    <string name="bookmarksEmptyHint">Kirjanmerkkejä ei ole vielä lisätty</string>
-    <string name="favoritesEmptyHint">Suosikkeja ei ole vielä lisätty</string>
+    <string name="brokenSiteProtectionsOn">Tämän sivuston suojaukset ovat <b>KÄYTÖSSÄ</b></string>
+    <string name="brokenSiteProtectionsOff">Tämän sivuston suojaukset ovat <b>POIS KÄYTÖSTÄ</b></string>
+    <string name="brokenSiteProtectionsOnBannerMessage">Suojausten kytkeminen pois päältä voi auttaa.</string>
+    <string name="brokenSiteProtectionsOffByRemoteConfigBannerMessage">Yksityisyyden suojaukset on väliaikaisesti poistettu käytöstä, koska ne näyttäisivät rikkovan tämän sivun.</string>
 
-    <!-- Dialogs -->
-    <string name="dialogConfirmTitle">Vahvista</string>
-    <string name="dialogSave">Tallenna</string>
-    <string name="delete">Poista</string>
-    <string name="edit">Muokkaa</string>
-    <string name="remove">Poista</string>
-    <string name="removeAll">Poista kaikki</string>
+    <string name="brokenSiteReportDataShowDetailsButton" instruction="This is on a button that allows users to view details on what kind of data is collected with their feedback report">Katso, mitä on lähetetty</string>
+    <string name="brokenSiteReportDataDisclosure">"<![CDATA[<b>Raporteissa lähetetyistä tiedoista ei voi tunnistaa sinua:</b><br/><br/>• Sivun URL-osoite (ilman tunnistettavia tietoja)<br/>• Laitteen merkki, malli ja valmistaja<br/>• Käyttöjärjestelmän versionumero<br/>• Sovelluksen versionumero<br/>• Nimetön kokeiluryhmä ominaisuuksien testaamista varten<br/>• Tietoa suojauksiemme aktiivisista versioista<br/>• Verkkoselainhakukoneen versionumero<br/>• Luettelo aktiivisista suojauksista ja selaimen ominaisuuksista<br/>• Estettyjen seurantatoimintojen isäntänimet, korvaavat pyynnöt, huomiotta jätetyt pyynnöt ja pyynnöt, jotka eivät ole seurannan estoluettelossa<br/>• Selaimen ilmoittamat virheet<br/>• Web-sivuston vastaustilan (HTTP) koodit<br/>• Mitä ilmoituslomaketta käytit (valikko, hallintapaneeli jne.)<br/>• Tämän sivuston viimeisen raportin lähetyspäivämäärä<br/>• Oletko valinnut tämän raportin tietojen näyttämisen vai et<br/>• Suojausten poiskytkeytymiskerrat<br/>• Kuinka nopeasti osat sivusta latautuivat<br/>• Miten pääsit tälle sivulle, joko: SERP (DuckDuckGo-haku), navigointi (linkki/URL) tai ulkoinen (muu keino)<br/>• Päivitysten määrä sivun latauksen jälkeen<br/>• Laitteesi ensisijainen kieli ja maa<br/>]]>"</string>
 
     <!-- Widget -->
     <string name="searchWidgetTextHint">Hae DuckDuckGosta</string>
@@ -226,8 +277,6 @@
     <string name="widgetConfigurationAddWidgetOption">Lisää widget</string>
     <string name="searchWidgetEmtpyFavoritesHint">Suosikkeja ei ole vielä lisätty</string>
     <string name="searchWidgetEmtpyFavoritesCta">Lisää suosikki</string>
-    <string name="daxFavoritesOnboardingCtaText"><![CDATA[Siirry suosikkisivustoillesi hetkessä!<br/><br/>Siirry suosikkisivustollesi. Napauta sitten \" ⠇\" -kuvaketta ja valitse Lisää suosikki.]]></string>
-    <string name="daxFavoritesOnboardingCtaContentDescription">Siirry suosikkisivustoillesi hetkessä! Siirry suosikkisivustollesi. Napauta sitten selaimen valikkokuvaketta ja valitse Lisää suosikki.</string>
     <string name="widgetConfigurationActivityTitle">Widget-asetukset</string>
     <string name="favoritesWidgetLabel">Suosikit</string>
     <string name="searchWidgetLabel">Hae</string>
@@ -358,7 +407,7 @@
     <string name="otherMainReasonTitleShort">Muut ongelmat</string>
 
     <string name="openEndedInputHint">Kerro mahdollisimman tarkasti</string>
-    <string name="submitFeedback">LÄHETÄ</string>
+    <string name="submitFeedback">Lähetä</string>
 
     <string name="tellUsHowToImprove">Kerro meille, mitä voimme parantaa.</string>
     <string name="thanksForTheFeedback">Kiitos palautteesta!</string>
@@ -369,7 +418,7 @@
     <string name="whatHaveYouBeenEnjoying">Mistä olet nauttinut?</string>
     <string name="awesomeToHear">Mahtava kuulla!</string>
     <string name="shareTheLoveWithARating">Jaathan kehusi Play Store -arviolla.</string>
-    <string name="rateTheApp">ARVIOI SOVELLUS</string>
+    <string name="rateTheApp">Arvioi sovellus</string>
     <string name="declineFurtherFeedback">EI KIITOS, TÄMÄ RIITTI</string>
     <string name="whichBrokenSites">Missä näitä ongelmia esiintyy?</string>
     <string name="whichBrokenSitesHint">Millä verkkosivustolla on ongelmia?</string>
@@ -386,7 +435,6 @@
 
     <!-- System Search-->
     <string name="systemSearchDeviceAppLabel">Tästä laitteesta</string>
-    <string name="systemSearchOmnibarInputHint"><font size="13">Hae tai kirjoita URL</font></string>
     <string name="systemSearchAppNotFound">Sovellusta ei löytynyt</string>
     <string name="systemSearchOnboardingText">Kiitos, että valitsit DuckDuckGon!\nKun nyt käytät hakua tai sovellusta, hakusi ovat suojattuja.</string>
     <string name="systemSearchOnboardingFeaturesIntroText">DuckDuckGo-sovellus myös:</string>
@@ -398,36 +446,23 @@
     <string name="systemSearchOnboardingButtonOk">Selvä</string>
 
     <!-- Dax Dialog -->
-    <string name="daxDialogHideButton">PIILOTA</string>
-    <string name="daxDialogPhew">Huh huh!</string>
-    <string name="daxDialogNext">Seuraava</string>
     <string name="daxDialogHighFive">Ylävitonen!</string>
     <string name="daxDialogGotIt">Selvä</string>
-    <string name="hideTipsTitle">Piilotetaanko jäljellä olevat vinkit?</string>
-    <string name="hideTipsText">Niitä on vain pari, ja yritimme tehdä niistä informatiivisia.</string>
-    <string name="hideTipsButton">Piilota vinkit ikuisesti</string>
+
+    <!-- AppTP Retention Experiment Dax Dialog -->
+    <string name="daxDialogAppTpRetentionText"><![CDATA[Nyt estät seurantaohjelmia kaikkialla verkossa 🎉<br/><br/>Voin estää myös seurantaohjelmat, jotka piileskelevät muissa sovelluksissa, vaikka et käyttäisi puhelintasi.]]></string>
+    <string name="daxDialogAppTpRetentionPrimaryButtonText">Ota App Tracking Protection käyttöön</string>
+    <string name="daxDialogAppTpRetentionSecondaryButtonText">Ei nyt</string>
 
     <!-- New Onboarding Experience -->
     <string name="onboardingWelcomeTitle">"Tervetuloa DuckDuckGo-sovellukseen!"</string>
     <string name="onboardingDaxText"><![CDATA[Internet voi olla pelottava.<br/><br/>Ei hätää! Yksityinen haku ja selaaminen on helpompaa kuin luulet.]]></string>
     <string name="onboardingLetsDoItButton">Aloitetaan!</string>
-    <string name="daxIntroCtaText"><![CDATA[Seuraavaksi vieraile suosikkisivustoissasi! <br/><br/>Estän jäljittäjät, jotta he eivät voi vakoilla sinua. Päivitän myös yhteytesi suojauksen, jos mahdollista. 🔒]]></string>
-    <string name="daxEndCtaText"><![CDATA[Hyvin menee!<br/><br/>Muista, että joka kerta, kun käytät minua selaamiseen, rasittavat mainokset katoavat. 👍]]></string>
-    <string name="daxSerpCtaText">DuckDuckGo-hakusi ovat aina nimettömiä. 🙌</string>
-    <plurals name="daxTrackersBlockedCtaText">
-        <item quantity="one"><![CDATA[ ja <b>%1$d muu</b> yrittivät seurata sinua tänne. <br/><br/>Estin sen!<br/><br/> ☝️Tarkista osoiteriviltä, kuka yrittää seurata sinua, kun vierailet uudella sivustolla.️]]></item>
-        <item quantity="other"><![CDATA[ ja <b>%1$d muuta</b> yrittivät seurata sinua tänne. <br/><br/>Estin sen!<br/><br/> ☝️Tarkista osoiteriviltä, kuka yrittää seurata sinua, kun vierailet uudella sivustolla.️]]></item>
-    </plurals>
-    <plurals name="daxTrackersBlockedCtaZeroText">
-        <item quantity="one"><![CDATA[ yritti seurata sinua tänne. <br/><br/>Estin sen!<br/><br/> ☝️Tarkista osoiteriviltä, kuka yrittää seurata sinua, kun vierailet uudella sivustolla.️]]></item>
-        <item quantity="other"><![CDATA[ yrittivät seurata sinua tänne. <br/><br/>Estin sen!<br/><br/> ☝️Tarkista osoiteriviltä, kuka yrittää seurata sinua, kun vierailet uudella sivustolla.️]]></item>
-    </plurals>
     <string name="daxNonSerpCtaText"><![CDATA[Kun napautat ja selaat, estän ikävät seurantaohjelmat. <br/><br/>Siirry eteenpäin – jatka selaamista!]]></string>
     <string name="daxMainNetworkCtaText" instruction="%1$s is the name of a company, %2$s is the website where the tracking is happening, %3$s is the name of the company showing in %1$s">Huomio! %1$s näkee mitä teet sivustolla %2$s enkä voi estää sitä. &lt;br/&gt;&lt;br/&gt;Mutta jos käytät minua selaamiseen, voin vähentää, mitä %3$s saa tietää sinusta, estämällä heidän seurantansa monilla muilla sivustoilla.</string>
     <string name="daxMainNetworkOwnedCtaText" instruction="%1$s is the name of a company, %2$s is the website where the tracking is happening, %3$s is the name of the company showing in %1$s">Hälytys! Koska %1$s omistaa palvelun %2$s, en voi estää heitä näkemästä, mitä teet täällä.&lt;br/&gt;&lt;br/&gt;Mutta jos käytät minua selaamiseen, voin vähentää, mitä %3$s saa tietää sinusta estämällä heidän seurantansa monilla muilla sivustoilla.</string>
 
     <!-- Download Confirmation -->
-    <string name="downloadConfirmationContinue">Tallenna latauksiin</string>
     <string name="downloadConfirmationSaveFileTitle" instruction="Placeholder is the name of a file">Tallenna %1$s</string>
     <string name="downloadConfirmationKeepBothFilesText">Pidä molemmat</string>
     <string name="downloadConfirmationReplaceOldFileText">Korvaa</string>
@@ -444,7 +479,7 @@
     <string name="changeIconDialogMessage">Sovellus voi sulkeutua muutosten tekemiseksi. Tule takaisin, kun olet ihaillut komeaa uutta kuvakettasi.</string>
 
     <!-- New dashboard / menu buttons -->
-    <string name="manageWhitelist">Suojaamattomat sivustot</string>
+    <string name="manageAllowlist">Suojaamattomat sivustot</string>
     <string name="reportBrokenSite">Ilmoita viallisesta sivustosta</string>
 
     <!-- Dialogs -->
@@ -452,19 +487,19 @@
     <string name="dialogEditTitle">Muokkaa</string>
     <string name="dialogSaveAction">Tallenna</string>
 
-    <!-- Whitelist -->
-    <string name="whitelistActivityTitle">Suojaamattomat sivustot</string>
+    <!-- Allowlist -->
+    <string name="allowlistActivityTitle">Suojaamattomat sivustot</string>
     <string name="enablePrivacyProtection">Ota yksityisyyden suoja käyttöön</string>
     <string name="disablePrivacyProtection">Poista yksityisyyden suoja käytöstä</string>
-    <string name="whitelistEntryOverflowContentDescription" instruction="Placeholder is a website">Lisää valintoja suojaamattomalle sivustolle %1$s</string>
-    <string name="whitelistEntryDeleteConfirmMessage" instruction="Placeholder is a website">Haluatko varmasti poistaa sivuston &lt;b&gt;%1$s&lt;/b&gt; suojaamattomista sivustoista?</string>
-    <string name="whitelistExplanation">Yksityisyyden suoja ei paranna näitä sivustoja.</string>
-    <string name="whitelistNoEntries">Tietosuoja on käytössä kaikilla sivustoilla</string>
-    <string name="whitelistDomainHint">www.esimerkki.com</string>
-    <string name="whitelistFormatError">Anna verkkotunnus, kuten <b>esimerkki.com</b> ja kokeile uudelleen</string>
+    <string name="allowlistEntryOverflowContentDescription" instruction="Placeholder is a website">Lisää valintoja suojaamattomalle sivustolle %1$s</string>
+    <string name="allowlistEntryDeleteConfirmMessage" instruction="Placeholder is a website">Haluatko varmasti poistaa sivuston &lt;b&gt;%1$s&lt;/b&gt; suojaamattomista sivustoista?</string>
+    <string name="allowlistExplanation">Yksityisyyden suoja ei paranna näitä sivustoja.</string>
+    <string name="allowlistNoEntries">Tietosuoja on käytössä kaikilla sivustoilla</string>
+    <string name="allowlistDomainHint">www.esimerkki.com</string>
+    <string name="allowlistFormatError">Anna verkkotunnus, kuten <b>esimerkki.com</b> ja kokeile uudelleen</string>
 
     <!-- Settings -->
-    <string name="settingsPrivacyProtectionWhitelist">Suojaamattomat sivustot</string>
+    <string name="settingsPrivacyProtectionAllowlist">Suojaamattomat sivustot</string>
 
     <!-- Fireproof websites -->
     <string name="fireproofWebsitesActivityTitle">Tee sivustoista palonkestäviä</string>
@@ -489,8 +524,8 @@
     <string name="fireproofWebsiteSettingsSelectionDialogNever">Ei koskaan</string>
     <string name="disableLoginDetectionDialogTitle">Poistetaanko palonkestävyyden muistutus käytöstä sivustoille kirjauduttaessa?</string>
     <string name="disableLoginDetectionDialogDescription">Voit muuttaa valintaa milloin tahansa asetuksista.</string>
-    <string name="disableLoginDetectionDialogPositive">POISTA KÄYTÖSTÄ</string>
-    <string name="disableLoginDetectionDialogNegative">PERUUTA</string>
+    <string name="disableLoginDetectionDialogPositive">Poista käytöstä</string>
+    <string name="disableLoginDetectionDialogNegative">Peruuta</string>
     <string name="automaticFireproofWebsiteLoginDialogTitle">Tehdäänkö sivustoista palonkestäviä kirjautumisen yhteydessä?</string>
     <string name="automaticFireproofWebsiteLoginDialogDescription">Sivustojen tekeminen palonkestäviksi tarkoittaa, että pysyt kirjautuneena, kun käytät Liekki-painiketta. Voit muuttaa tätä asetusta milloin tahansa asetuksissa. </string>
     <string name="automaticFireproofWebsiteLoginDialogFirstOption">Tee aina palonkestäväksi</string>
@@ -517,8 +552,8 @@
     <string name="preciseLocationSystemDialogDeny">Ehkä myöhemmin</string>
     <string name="preciseLocationSystemDialogNeverAllow">Älä kysy uudelleen tälle sivustolle</string>
     <string name="preciseLocationSiteDialogTitle" instruction="Placeholder is the name of a website">Annetaanko palvelulle %1$s lupa nähdä sijaintisi?</string>
-    <string name="preciseLocationDDGDialogSubtitle">Käytämme anonyymiä sijaintia pelkästään tarjotaksemme parempia tuloksia lähempää sijaintiasi. Voit aina muuttaa mieltäsi myöhemmin.</string>
     <string name="preciseLocationSiteDialogSubtitle">Voit hallita yksittäisille sivustoille antamiasi sijaintilupia asetuksista.</string>
+    <string name="preciseLocationDDGDialogSubtitle">Käytämme anonyymiä sijaintia pelkästään tarjotaksemme parempia tuloksia lähempää sijaintiasi. Voit hallita yksittäisille sivustoille antamiasi sijaintilupia asetuksista.</string>
     <string name="preciseLocationSiteDialogAllowAlways">Aina</string>
     <string name="preciseLocationSiteDialogAllowOnce">Vain tässä istunnossa</string>
     <string name="preciseLocationSiteDialogDenyAlways">Kiellä aina</string>
@@ -539,9 +574,7 @@
 
     <!--  Global Privacy Control-->
     <string name="globalPrivacyControlActivityTitle">Global Privacy Control (GPC)</string>
-    <string name="globalPrivacyControlDescription">
-        <![CDATA[DuckDuckGo estää monet seurannat automaattisesti. GPC:n (Global Privacy Control) avulla voit myös pyytää osallistuvia sivustoja rajoittamaan henkilötietojesi myyntiä tai jakamista muiden yritysten kanssa. <u><a href=\"\">Lue lisää</a><u/>]]>
-    </string>
+    <string name="globalPrivacyControlDescription"><![CDATA[DuckDuckGo estää monet seurannat automaattisesti. GPC:n (Global Privacy Control) avulla voit myös pyytää osallistuvia sivustoja rajoittamaan henkilötietojesi myyntiä tai jakamista muiden yritysten kanssa. <u><a href=\"\">Lue lisää</a><u/>]]></string>
     <string name="globalPrivacyControlSetting">Global Privacy Control (GPC)</string>
     <string name="globalPrivacyControlToggle">Global Privacy Control (GPC)</string>
     <string name="disabled">Pois käytöstä</string>
@@ -560,11 +593,10 @@
 
     <!-- Email Autofill -->
     <string name="aliasToClipboardMessage">Uusi osoite on kopioitu leikepöydälle</string>
-    <string name="autofillTooltipUseYourAlias" instruction="Placeholder is an alias previously saved by the user">Käytä %1$s</string>
-    <string name="autofillTooltipUseYourAliasDescription">Estä sähköpostiseuranta</string>
-    <string name="autofillTooltipGenerateAddress">Luo yksityinen Duck Address</string>
-    <string name="autofillTooltipGenerateAddressDescription">Estää sähköpostiseurannan ja piilottaa osoitteesi</string>
     <string name="newEmailAliasMenuTitle">Luo Duck Address</string>
+
+    <!-- Autofill -->
+    <string name="autofillSnackbarAction" instruction="Label for a button that lets the user view the details for a login credential">Näytä</string>
 
     <!-- Waitlist Notification -->
     <string name="waitlistNotificationDialogDescription">Haluatko saada ilmoituksen, kun on sinun vuorosi?</string>
@@ -575,26 +607,6 @@
     <string name="emailProtectionActivityTitle">Sähköpostisuojaus (beta)</string>
     <string name="emailNotSupported">Laitetta ei tueta</string>
     <string name="emailNotSupportedExplanation">Sähköpostisuojauksen avulla voit luoda yksityisiä sähköpostiosoitteita, jotka poistavat sähköpostiseuraajat. Meidän on salattava ja tallennettava nämä luomasi osoitteet paikallisesti laitteellesi. Koska laitteesi ei tue salattua tallennusta, sähköpostisuojaus ei ole käytettävissä.</string>
-
-    <!-- Bookmark folders -->
-    <string name="bookmarkDialogTitleEdit">Muokkaa kirjanmerkkiä</string>
-    <string name="favoriteDialogTitleEdit">Muokkaa suosikkia</string>
-    <string name="locationLabel">Sijainti</string>
-    <string name="folderLocationTitle">Valitse sijainti</string>
-    <string name="addFolder">Lisää kansio</string>
-    <string name="editFolder">Muokkaa kansiota</string>
-    <string name="bookmarkFolderDeleteDialogMessage">"Haluatko varmasti poistaa "</string>
-    <string name="bookmarkFolderEmpty">Tyhjä</string>
-
-    <plurals name="bookmarkFolderDeleteDialogMessage">
-        <item quantity="one">%1$s%2$s ja %3$d kohteen?</item>
-        <item quantity="other">%1$s%2$s ja %3$d kohdetta?</item>
-    </plurals>
-
-    <plurals name="bookmarkFolderItems">
-        <item quantity="one">%1$d kohde</item>
-        <item quantity="other">%1$d kohdetta</item>
-    </plurals>
 
     <!-- Accessibility-->
     <string name="settingsAccessibility">Käytettävyys</string>
@@ -615,7 +627,7 @@
 
     <!-- MacOs Settings -->
     <string name="macos_settings_description">Selaa yksityisesti Mac-sovelluksellamme</string>
-    <string name="macos_settings_title">DuckDuckGo-työpöytäsovellus</string>
+    <string name="macos_settings_title">DuckDuckGon Mac-selain</string>
 
     <!-- Downloads -->
     <string name="downloadsMenuItem">Lataukset</string>
@@ -643,34 +655,155 @@
 
     <!-- Autoconsent -->
     <!-- smartling.character_limit = 82 -->
-    <string name="autoconsentDialogTitle">Näyttää siltä, että tällä sivustolla on evästeiden hallinnan ponnahdusikkuna👇</string>
+    <string name="autoconsentDialogTitle"><![CDATA[<b>Haluatko, että hoidan evästeiden ponnahdusikkunat?</b>]]></string>
     <!-- smartling.character_limit = 160 -->
-    <string name="autoconsentDialogDescription">Haluatko, että hoidan nämä puolestasi? Voin yrittää minimoida evästeet, maksimoida yksityisyyden ja piilottaa tällaiset ponnahdusikkunat.</string>
+    <string name="autoconsentDialogDescription">Voin pyrkiä valitsemaan valittavissa olevista asetuksista yksityisimmät ja piilottaa tämänkaltaiset ponnahdusikkunat.</string>
     <!-- smartling.character_limit = 42 -->
-    <string name="autoconsentPrimaryCta">Evästeiden hallinnan ponnahdusikkunat</string>
+    <string name="autoconsentPrimaryCta">Hoida ponnahdusikkunat puolestani</string>
     <!-- smartling.character_limit = 42 -->
-    <string name="autoconsentSecondaryCta">Ei kiitos</string>
+    <string name="autoconsentSecondaryCta">Ei, hoidan ne itse</string>
 
     <string name="autoconsentSetting">Evästeiden hallinnan ponnahdusikkunat</string>
-    <string name="autoconsentAnimationText">Hallitut evästeet</string>
+    <string name="autoconsentCosmeticNoticeAnimationText">Ponnahdusikkuna piilotettu</string>
+    <string name="autoconsentManagedNoticeAnimationText">Hallitut evästeet</string>
 
-    <!-- Site Permissions Settings -->
-    <string name="settingsSitePermissions">Sivuston käyttöoikeudet</string>
-    <string name="sitePermissionsSettingsDescription">Käyttämäsi sivustot saattavat pyytää laitteesi sijainnin, kameran tai mikrofonin käyttöoikeutta. Ne eivät voi käyttää niitä, ellet myönnä tällaista käyttöoikeutta.</string>
-    <string name="sitePermissionsSettingsEnablePermissionTitle">Salli kaikkien sivustojen pyytää:</string>
-    <string name="sitePermissionsSettingsLocation">Sijainti</string>
-    <string name="sitePermissionsSettingsCamera">Kamera</string>
-    <string name="sitePermissionsSettingsMicrophone">Mikrofoni</string>
-    <string name="sitePermissionsSettingsAllowedSitesTitle">Hallitse sivustoja</string>
-    <string name="sitePermissionsSettingsEmptyText">Ei vielä yhtään sivustoa</string>
-    <string name="sitePermissionsRemoveAllWebsitesSnackbarText">Käyttöoikeudet poistettu kaikilta sivustoilta</string>
-    <string name="permissionPerWebsiteText" instruction="Placeholder is the name of a website">Oikeudet: %1$s </string>
-    <string name="permissionsPerWebsiteAskSetting">Kysy</string>
-    <string name="permissionsPerWebsiteDenySetting">Estä</string>
-    <string name="permissionsPerWebsiteAllowSetting">Salli</string>
-    <string name="permissionsPerWebsiteAskDisabledSetting">Kysy-toiminto poistettu käytöstä kaikilta sivustoilta</string>
-    <string name="permissionsPerWebsiteSelectorDialogTitle" instruction="%1$s is the name of a permissions and %2$s is the name of a website, i.e. Camera permission for example.com">%1$s: käyttöoikeus – lupa %2$s</string>
+    <!-- Notify Me View on Downloads -->
+    <string name="downloadsNotifyMeTitle">Saat tietää, milloin lataukset ovat valmiita</string>
+    <string name="downloadsNotifyMeSubtitle">Saat ilmoituksen, kun lataukset ovat valmiita.</string>
+
+    <!-- Windows Settings -->
+    <string name="windows_settings_title">DuckDuckGon Windows-selain</string>
+    <string name="windows_settings_description">Selaa yksityisesti Windows-sovelluksellamme</string>
+    <string name="windows_settings_description_ready">Lataus saatavilla</string>
+    <string name="windows_settings_description_list">Olet listalla!</string>
+
+    <!-- Full screen message-->
+    <string name="fullScreenMessage">Vedä yläreunasta alaspäin ja poistu koko näytöstä painamalla takaisin-painiketta</string>
+
+    <!-- Tab Switcher 'Close All Tabs' confirmation prompt -->
+    <string name="closeAppTabsConfirmationDialogTitle" instruction="Dialog title for deleting all open tabs">Sulje kaikki välilehdet?</string>
+    <string name="closeAppTabsConfirmationDialogDescription">Haluatko varmasti sulkea kaikki välilehdet?</string>
+    <string name="closeAppTabsConfirmationDialogCancel">Peruuta</string>
+    <string name="closeAppTabsConfirmationDialogClose">Sulje</string>
+
+    <!-- Private voice search -->
+    <string name="accessibilityVoiceSearchSubtitle">Lisää yksityinen äänihakuvaihtoehto osoitepalkkiin. Ääntä ei tallenneta eikä jaeta kenellekään, edes DuckDuckGolle.</string>
+    <string name="accessibilityVoiceSearchTitle">Yksityinen äänihaku</string>
+
+    <!-- Uploading an image from the camera or choosing to use existing image -->
+    <string name="imageCaptureCameraUnavailable">Kameraa ei voitu käyttää</string>
+    <string name="imageCaptureCameraGalleryDisambiguationTitle">Lataa kuva</string>
+    <string name="imageCaptureCameraGalleryDisambiguationGalleryOption">Valitse tiedosto</string>
+    <string name="imageCaptureCameraGalleryDisambiguationCameraOption">Ota valokuva</string>
+    <string name="imageCaptureCameraPermissionDeniedTitle">Salli DuckDuckGon pyytää kameran käyttöoikeutta tällä laitteella</string>
+    <string name="imageCaptureCameraPermissionDeniedMessage">Sivustot voivat käyttää kameraa vain, jos sallit DuckDuckGon pyytää sen käyttöoikeutta.</string>
+    <string name="imageCaptureCameraPermissionDeniedPositiveButton">Avaa asetukset</string>
+    <string name="imageCaptureCameraPermissionDeniedNegativeButton">Peruuta</string>
 
     <!-- Autofill -->
-    <string name="autofillSettingsDisplayName">Automaattinen täyttö</string>
+    <string name="settingsAutofillLoginsSetting">Salasanat</string>
+    <string name="settingsPasswordsAndAutofillLoginsSetting">Salasanat ja automaattinen täyttö</string>
+    <string name="autofillLoginSavedSnackbarMessage">Salasana tallennettu</string>
+    <string name="autofillLoginUpdatedSnackbarMessage">Salasana päivitetty</string>
+
+    <!-- Custom Tab -->
+    <string name="openInDdgMenuItemTitle">Avaa DuckDuckGo:ssa</string>
+    <string name="runningInDdgMenuItemTitle">Käynnissä DuckDuckGossa</string>
+
+    <!-- SSL Error -->
+    <string name="sslErrorTitle">Varoitus: Tämä sivusto ei välttämättä ole turvallinen</string>
+    <string name="sslErrorHeadline" instruction="Placeholder is domain with certificate issues">Tämän sivuston varmenne on virheellinen. Saatat olla yhteydessä palvelimeen, joka teeskentelee olevansa %1$s, mikä voi vaarantaa luottamukselliset tietosi.</string>
+    <string name="sslErrorLeaveCTA">Poistu sivustolta</string>
+    <string name="sslErrorAdvancedCTA">Lisäasetukset</string>
+    <string name="sslErrorExpandedHeadline">DuckDuckGo varoittaa, jos verkkosivustolla on virheellinen sertifikaatti.</string>
+    <string name="sslErrorExpandedCTA"><![CDATA[<u>Hyväksy riski ja mene sivustolle<u/>]]></string>
+    <string name="sslErrorExpiredMessage" instruction="Placeholder is domain with certificate issues">Verkkotunnuksen %1$s turvasertifikaatti on vanhentunut. Verkkosivusto on ehkä väärin määritetty, hyökkäys on saattanut vaarantaa yhteytesi tai järjestelmäsi kellossa on virhe.</string>
+    <string name="sslErrorWrongHostMessage" instruction="Placeholder is domain with certificate issues">Verkkotunnuksen %1$s suojausvarmenne ei vastaa *.%2$s. Verkkosivusto on ehkä väärin määritetty, hyökkäys on saattanut vaarantaa yhteytesi tai järjestelmäsi kellossa on virhe.</string>
+    <string name="sslErrorUntrustedMessage" instruction="Placeholder is domain with certificate issues">Laitteesi käyttöjärjestelmä ei luota verkkotunnuksen %1$s suojausvarmenteeseen. Verkkosivusto on ehkä väärin määritetty, hyökkäys on saattanut vaarantaa yhteytesi tai järjestelmäsi kellossa on virhe.</string>
+
+    <!-- Extended Onboarding-->
+    <string name="preOnboardingDaxDialog1Title"><![CDATA[Hei!<br/><br/>Oletko valmis parempaan ja yksityisempään internetiin?]]></string>
+    <string name="preOnboardingDaxDialog1Button">Aloitetaan!</string>
+    <string name="preOnboardingDaxDialog2Title">Yksityisyyden suoja aktivoitu!</string>
+    <string name="preOnboardingDaxDialog2Button">Valitse selaimesi</string>
+    <string name="preOnboardingComparisonChartItem1">Yksityinen selaus oletuksena</string>
+    <string name="preOnboardingComparisonChartItem2">Estä kolmannen osapuolen seuraimet</string>
+    <string name="preOnboardingComparisonChartItem3">Estä evästeponnahdusikkunat</string>
+    <string name="preOnboardingComparisonChartItem4">Estä rasittavat mainokset</string>
+    <string name="preOnboardingComparisonChartItem5">Tyhjennä selaustiedot nopeasti</string>
+    <string name="preOnboardingDaxDialog3Title">Mahtavaa! Tervetuloa käyttämään Duckia.</string>
+    <string name="preOnboardingDaxDialog3Button">Aloita selailu</string>
+    <string name="onboardingSearchDaxDialogTitle">Kokeile hakua!</string>
+    <string name="onboardingSearchDaxDialogDescription">DuckDuckGo-hakusi ovat aina nimettömiä.</string>
+    <string name="onboardingSearchDaxDialogOption1" instruction="translate &apos;duck&apos; too.">miten sanotaan \"ankka\" englanniksi</string>
+    <string name="onboardingSearchDaxDialogOption1English" instruction="translate &apos;duck&apos; too. Don&apos;t add question mark">kuinka sanotaan \"duck\" espanjaksi</string>
+    <string name="onboardingSearchQueryOption1">miten sanotaan ankka englanniksi</string>
+    <string name="onboardingSearchQueryOption1English">miten sanotaan ankka espanjaksi</string>
+    <string name="onboardingSearchDaxDialogOption2">avatarmuotti</string>
+    <string name="onboardingSearchDaxDialogOption2US">mighty ducks cast</string>
+    <string name="onboardingSearchDaxDialogOption3">paikallissää</string>
+    <string name="onboardingSearchDaxDialogOption4">Yllätä minut!</string>
+    <string name="onboardingSearchQueryOption4">illallisreseptejä</string>
+    <string name="onboardingSearchQueryOption4US">suklaakeksireseptit</string>
+    <string name="onboardingSitesDaxDialogTitle">Siirry sivustolle!</string>
+    <string name="onboardingSitesDaxDialogDescription">Estän jäljittäjät, jotta ne eivät voi vakoilla sinua.</string>
+    <string name="onboardingSitesDaxDialogOption1">espn.com</string>
+    <string name="onboardingSitesDaxDialogOption2">yahoo.com</string>
+    <string name="onboardingSitesDaxDialogOption3">ebay.com</string>
+    <string name="onboardingSitesDaxDialogOption4">Yllätä minut!</string>
+    <string name="onboardingSerpDaxDialogDescription">Tällainen on DuckDuckGo Search. Yksityinen. Nopea. Vähemmän mainoksia.</string>
+    <string name="onboardingSerpDaxDialogButton">Selvä!</string>
+    <string name="onboardingSitesSuggestionsDaxDialogTitle">Siirry seuraavaksi sivustolle!</string>
+    <plurals name="onboardingTrackersBlockedDialogDescription">
+        <item quantity="one"><![CDATA[ ja <b>%1$d muu</b> yritti seurata sinua täällä. Estin ne!<br/><br/>☝️ Napauta kilpeä saadaksesi lisätietoja.️]]></item>
+        <item quantity="other"><![CDATA[ ja <b>%1$d muuta</b> yrittivät seurata sinua täällä. Estin ne!<br/><br/>☝️ Napauta kilpiä saadaksesi lisätietoja.️]]></item>
+    </plurals>
+    <plurals name="onboardingTrackersBlockedZeroDialogDescription" tools:ignore="ImpliedQuantity">
+        <item quantity="one"><![CDATA[ yritti seurata sinua täällä. Estin sen!<br/><br/>☝️ Napauta kilpeä saadaksesi lisätietoja.️]]></item>
+        <item quantity="other"><![CDATA[ yrittivät seurata sinua täällä. Estin ne!<br/><br/>☝️ Napauta kilpeä saadaksesi lisätietoja.️]]></item>
+    </plurals>
+    <string name="onboardingTrackersBlockedDaxDialogButton">Selvä!</string>
+    <string name="onboardingFireButtonDaxDialogDescription"><![CDATA[Tyhjennä selaustoimintasi välittömästi <b>Fire Button</b> -painikkeella.<br/><br/>Kokeile nyt! ☝️️]]></string>
+    <string name="onboardingEndDaxDialogTitle">"Hyvin menee!"</string>
+    <string name="onboardingEndDaxDialogDescription">Muista, että joka kerta kun käytät minua selaamiseen, rasittavat mainokset katoavat. 👌</string>
+    <string name="onboardingEndDaxDialogButton">Valmista!</string>
+    <string name="onboardingPrivacyProDaxDialogTitle">Ai niin...</string>
+    <string name="onboardingPrivacyProDaxDialogDescription"><![CDATA[DuckDuckGossa on myös sisäänrakennettu <b>VPN</b>!<br/><br/>Aktivoi se <b>maksullisella Privacy Pro -tilauksella.</b>]]></string>
+    <string name="onboardingPrivacyProDaxDialogOkButton">Lue lisää</string>
+    <string name="onboardingPrivacyProDaxDialogCancelButton">Ohita</string>
+
+    <!-- Highlight Onboarding Experiment-->
+    <string name="highlightsPreOnboardingDaxDialog1Title"><![CDATA[Hei!<br/><br/>Oletko valmis käyttämään nopeampaa selainta, joka pitää sinut suojattuna?]]></string>
+    <string name="highlightsPreOnboardingDaxDialog2Title">Suojaukset aktivoitu!</string>
+    <string name="highlightsPreOnboardingComparisonChartItem2">Estä kolmannen osapuolen seuraimet</string>
+    <string name="highlightsPreOnboardingComparisonChartItem3">Estä evästepyynnöt ja ponnahdusikkunat</string>
+    <string name="highlightsPreOnboardingComparisonChartItem4">Estä kohdennetut mainokset</string>
+    <string name="highlightsPreOnboardingComparisonChartItem5">Poista selaustiedot nopeasti</string>
+    <string name="highlightsPreOnboardingSelectAppIconTitle">Mikä väri sopii minulle parhaiten?</string>
+    <string name="highlightsPreOnboardingSelectAppIconDescription">Valitse sovelluskuvake:</string>
+    <string name="highlightsPreOnboardingSelectAppIconOkButton">Seuraava</string>
+    <string name="highlightsPreOnboardingAddressBarTitle">Mihin osoitepalkki pitäisi sijoittaa?</string>
+    <string name="highlightsPreOnboardingAddressBarOption1Title">Yläosa (oletus)</string>
+    <string name="highlightsPreOnboardingAddressBarOption1Description">Helppo nähdä</string>
+    <string name="highlightsPreOnboardingAddressBarOkButton">Seuraava</string>
+    <string name="highlightsPreOnboardingAddressBarOption2Title">Alareuna</string>
+    <string name="highlightsPreOnboardingAddressBarOption2Description">Helppo tavoittaa</string>
+    <string name="highlightsOnboardingSearchQueryOption4">ankanpoikaset</string>
+    <string name="highlightsOnboardingSearchDaxDialogDescription">DuckDuckGo-hakusi ovat aina yksityisiä.</string>
+    <string name="highlightsOnboardingSerpDaxDialogDescription"><![CDATA[Tällainen on <b>**DuckDuckGo Search**!</b> Yksityinen. Nopea. Vähemmän mainoksia.]]></string>
+    <string name="highlightsOnboardingEndDaxDialogDescription">Muista, että joka kerta kun käytät minua selaamiseen, rasittavat mainokset katoavat.</string>
+    <string name="onboardingFireButtonDaxDialogOkButton">Kokeile sitä</string>
+    <string name="onboardingFireButtonDaxDialogCancelButton">Ohita</string>
+
+    <!-- Appearance settings -->
+    <string name="settingsAddressBarPositionTitle">Osoitekenttä</string>
+    <string name="settingsAddressBarPositionTop">Ylös</string>
+    <string name="settingsAddressBarPositionBottom">Alareuna</string>
+
+    <!-- Show on App Launch Option -->
+    <string name="showOnAppLaunchOptionTitle">Näytä sovelluksen käynnistyksen yhteydessä</string>
+    <string name="showOnAppLaunchOptionLastOpenedTab">Viimeksi avattu -välilehti</string>
+    <string name="showOnAppLaunchOptionNewTabPage">Uusi välilehti -sivu</string>
+    <string name="showOnAppLaunchOptionSpecificPage">Tietty sivu</string>
+
 </resources>

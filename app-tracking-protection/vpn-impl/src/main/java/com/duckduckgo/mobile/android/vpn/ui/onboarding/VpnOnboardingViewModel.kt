@@ -21,10 +21,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.duckduckgo.anvil.annotations.ContributesViewModel
-import com.duckduckgo.app.global.DispatcherProvider
+import com.duckduckgo.app.di.AppCoroutineScope
+import com.duckduckgo.common.utils.DispatcherProvider
 import com.duckduckgo.di.scopes.ActivityScope
 import com.duckduckgo.mobile.android.vpn.R
-import com.duckduckgo.mobile.android.vpn.network.VpnDetector
+import com.duckduckgo.mobile.android.vpn.network.ExternalVpnDetector
 import com.duckduckgo.mobile.android.vpn.pixels.DeviceShieldPixels
 import com.duckduckgo.mobile.android.vpn.state.VpnStateMonitor
 import com.duckduckgo.mobile.android.vpn.ui.onboarding.AppThemeAppTPOnboardingResourceHelper.AppTPOnboadingResource.TRACKERS_COUNT
@@ -42,10 +43,10 @@ import kotlinx.coroutines.launch
 class VpnOnboardingViewModel @Inject constructor(
     private val deviceShieldPixels: DeviceShieldPixels,
     private val vpnStore: VpnStore,
-    private val vpnDetector: VpnDetector,
+    private val vpnDetector: ExternalVpnDetector,
     private val vpnStateMonitor: VpnStateMonitor,
     private val appTPOnboardingAnimationHelper: AppTPOnboardingResourceHelper,
-    private val appCoroutineScope: CoroutineScope,
+    @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
     private val dispatcherProvider: DispatcherProvider,
 ) : ViewModel() {
 
@@ -79,10 +80,12 @@ class VpnOnboardingViewModel @Inject constructor(
     )
 
     fun onTurnAppTpOffOn() {
-        if (vpnDetector.isVpnDetected()) {
-            sendCommand(Command.ShowVpnConflictDialog)
-        } else {
-            sendCommand(Command.CheckVPNPermission)
+        viewModelScope.launch(dispatcherProvider.io()) {
+            if (vpnDetector.isExternalVpnDetected()) {
+                sendCommand(Command.ShowVpnConflictDialog)
+            } else {
+                sendCommand(Command.CheckVPNPermission)
+            }
         }
     }
 

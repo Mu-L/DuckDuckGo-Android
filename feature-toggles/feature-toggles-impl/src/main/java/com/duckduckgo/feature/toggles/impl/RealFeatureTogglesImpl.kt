@@ -17,7 +17,7 @@
 package com.duckduckgo.feature.toggles.impl
 
 import com.duckduckgo.anvil.annotations.ContributesPluginPoint
-import com.duckduckgo.app.global.plugins.PluginPoint
+import com.duckduckgo.common.utils.plugins.PluginPoint
 import com.duckduckgo.di.scopes.AppScope
 import com.duckduckgo.feature.toggles.api.FeatureToggle
 import com.duckduckgo.feature.toggles.api.FeatureTogglesPlugin
@@ -47,4 +47,4 @@ class RealFeatureToggleImpl @Inject constructor(private val featureTogglesPlugin
     boundType = FeatureTogglesPlugin::class,
 )
 @Suppress("unused")
-interface FeatureTogglesPluginPoint
+private interface FeatureTogglesPluginPoint

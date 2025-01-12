@@ -32,8 +32,8 @@ import com.duckduckgo.app.browser.R
 import com.duckduckgo.app.browser.omnibar.animations.TrackerLogo.ImageLogo
 import com.duckduckgo.app.browser.omnibar.animations.TrackerLogo.LetterLogo
 import com.duckduckgo.app.browser.omnibar.animations.TrackerLogo.StackedLogo
-import com.duckduckgo.mobile.android.ui.view.getColorFromAttr
-import com.duckduckgo.mobile.android.ui.view.toPx
+import com.duckduckgo.common.ui.view.getColorFromAttr
+import com.duckduckgo.common.ui.view.toPx
 
 internal class TrackersLottieAssetDelegate(
     val context: Context,
@@ -88,11 +88,11 @@ internal class TrackersLottieAssetDelegate(
         return object : Drawable() {
 
             private val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                color = context.getColorFromAttr(com.duckduckgo.mobile.android.R.attr.toolbarIconColor)
+                color = context.getColorFromAttr(com.duckduckgo.mobile.android.R.attr.daxColorPrimaryIcon)
             }
 
             private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                color = context.getColorFromAttr(com.duckduckgo.mobile.android.R.attr.omnibarRoundedFieldBackgroundColor)
+                color = context.getColorFromAttr(com.duckduckgo.mobile.android.R.attr.daxColorSurface)
                 typeface = Typeface.SANS_SERIF
             }
 

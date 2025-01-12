@@ -16,6 +16,7 @@
 
 package com.duckduckgo.adclick.impl
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.duckduckgo.adclick.api.AdClickManager
 import com.duckduckgo.adclick.impl.pixels.AdClickPixelName
 import com.duckduckgo.adclick.impl.pixels.AdClickPixels
@@ -28,14 +29,12 @@ import org.junit.runner.RunWith
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 
-@RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE)
+@RunWith(AndroidJUnit4::class)
 class DuckDuckGoAdClickManagerTest {
 
     private val mockAdClickData: AdClickData = mock()
@@ -156,7 +155,6 @@ class DuckDuckGoAdClickManagerTest {
 
         verify(mockAdClickData).setActiveTab(tabId)
         verify(mockAdClickData).addExemption(tabId = any(), exemption = any())
-        verify(mockAdClickPixels).updateCountPixel(AdClickPixelName.AD_CLICK_PAGELOADS_WITH_AD_ATTRIBUTION)
     }
 
     @Test
@@ -172,7 +170,6 @@ class DuckDuckGoAdClickManagerTest {
 
         verify(mockAdClickData).setActiveTab(tabId)
         verify(mockAdClickData, never()).addExemption(tabId = any(), exemption = any())
-        verify(mockAdClickPixels, never()).updateCountPixel(AdClickPixelName.AD_CLICK_PAGELOADS_WITH_AD_ATTRIBUTION)
     }
 
     @Test
@@ -330,6 +327,7 @@ class DuckDuckGoAdClickManagerTest {
 
         val result = testee.isExemption(documentUrl = documentUrl, url = url)
         verify(mockAdClickPixels, never()).fireAdClickActivePixel(any())
+        verify(mockAdClickPixels, never()).updateCountPixel(AdClickPixelName.AD_CLICK_PAGELOADS_WITH_AD_ATTRIBUTION)
         assertFalse(result)
     }
 
@@ -346,6 +344,7 @@ class DuckDuckGoAdClickManagerTest {
 
         verify(mockAdClickData).removeExemption()
         verify(mockAdClickPixels, never()).fireAdClickActivePixel(any())
+        verify(mockAdClickPixels, never()).updateCountPixel(AdClickPixelName.AD_CLICK_PAGELOADS_WITH_AD_ATTRIBUTION)
         assertFalse(result)
     }
 
@@ -363,6 +362,7 @@ class DuckDuckGoAdClickManagerTest {
 
         verify(mockAdClickData, never()).removeExemption()
         verify(mockAdClickPixels, never()).fireAdClickActivePixel(any())
+        verify(mockAdClickPixels, never()).updateCountPixel(AdClickPixelName.AD_CLICK_PAGELOADS_WITH_AD_ATTRIBUTION)
         assertFalse(result)
     }
 
@@ -374,6 +374,29 @@ class DuckDuckGoAdClickManagerTest {
 
         whenever(mockAdClickData.isHostExempted(documentUrlHost)).thenReturn(true)
         whenever(mockAdClickData.getExemption()).thenReturn(notExpired(documentUrlHost))
+        whenever(mockAdClickData.getCurrentPage()).thenReturn(documentUrl)
+        whenever(mockAdClickAttribution.isAllowed(url)).thenReturn(true)
+        testee.detectAdDomain(url = "https://asos.com/")
+
+        val result = testee.isExemption(documentUrl = documentUrl, url = url)
+
+        verify(mockAdClickData, never()).removeExemption()
+        verify(mockAdClickPixels).fireAdClickActivePixel(any())
+        verify(mockAdClickPixels, times(1)).updateCountPixel(AdClickPixelName.AD_CLICK_PAGELOADS_WITH_AD_ATTRIBUTION)
+        assertTrue(result)
+    }
+
+    @Test
+    fun whenIsExemptionCalledWithETldPlusOneExemptedAndMatchingTrackerThenSendPixelAndReturnTrue() {
+        val documentUrl = "https://uk.asos.com"
+        val documentUrlHost = "uk.asos.com" // notice the host: uk.asos.com
+        val documentUrlTlDPlusOne = "asos.com" // notice the eTLD+1: asos.com
+        val url = "https://bat.bing.com"
+
+        whenever(mockAdClickData.isHostExempted(documentUrlHost)).thenReturn(false)
+        whenever(mockAdClickData.isHostExempted(documentUrlTlDPlusOne)).thenReturn(true)
+        whenever(mockAdClickData.getExemption()).thenReturn(notExpired(documentUrlTlDPlusOne))
+        whenever(mockAdClickData.getCurrentPage()).thenReturn(documentUrl)
         whenever(mockAdClickAttribution.isAllowed(url)).thenReturn(true)
 
         val result = testee.isExemption(documentUrl = documentUrl, url = url)

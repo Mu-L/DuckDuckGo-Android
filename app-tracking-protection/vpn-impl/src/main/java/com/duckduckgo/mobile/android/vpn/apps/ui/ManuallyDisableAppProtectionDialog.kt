@@ -22,7 +22,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
-import com.duckduckgo.app.global.extensions.safeGetApplicationIcon
+import com.duckduckgo.common.utils.extensions.safeGetApplicationIcon
 import com.duckduckgo.mobile.android.vpn.R
 import com.duckduckgo.mobile.android.vpn.apps.TrackingProtectionAppInfo
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -120,11 +120,6 @@ class ManuallyDisableAppProtectionDialog : DialogFragment() {
         const val TAG_MANUALLY_EXCLUDE_APPS_DISABLE = "ManuallyExcludedAppsDialogDisable"
         private const val KEY_APP_PACKAGE_NAME = "KEY_APP_PACKAGE_NAME"
         private const val KEY_APP_NAME = "KEY_APP_NAME"
-
-        const val NO_REASON_NEEDED = 0
-        const val STOPPED_WORKING = 1
-        const val TRACKING_OK = 2
-        const val DONT_USE = 3
 
         fun instance(appInfo: TrackingProtectionAppInfo): ManuallyDisableAppProtectionDialog {
             return ManuallyDisableAppProtectionDialog().also { fragment ->
