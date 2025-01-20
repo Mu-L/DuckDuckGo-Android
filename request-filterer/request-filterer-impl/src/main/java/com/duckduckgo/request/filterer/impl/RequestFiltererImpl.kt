@@ -18,8 +18,8 @@ package com.duckduckgo.request.filterer.impl
 
 import android.webkit.WebResourceRequest
 import androidx.core.net.toUri
-import com.duckduckgo.app.global.DispatcherProvider
-import com.duckduckgo.app.global.UriString
+import com.duckduckgo.app.browser.UriString
+import com.duckduckgo.common.utils.DispatcherProvider
 import com.duckduckgo.di.scopes.AppScope
 import com.duckduckgo.feature.toggles.api.FeatureToggle
 import com.duckduckgo.privacy.config.api.UnprotectedTemporary
@@ -32,6 +32,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import timber.log.Timber
 
 @ContributesBinding(AppScope::class)
@@ -59,12 +60,17 @@ class RequestFiltererImpl @Inject constructor(
         val origin = request.requestHeaders[ORIGIN]
         val referer = request.requestHeaders[REFERER]
 
-        if (documentUrl != previousPage) {
-            referer?.let {
-                return compareUrl(it)
-            }
-            origin?.let {
-                return compareUrl(it)
+        runCatching {
+            val currentTopDomain = documentUrl.toHttpUrl().topPrivateDomain()
+            val previousTopDomain = previousPage?.toHttpUrl()?.topPrivateDomain()
+
+            if (currentTopDomain != previousTopDomain) {
+                referer?.let {
+                    return compareUrl(it)
+                }
+                origin?.let {
+                    return compareUrl(it)
+                }
             }
         }
         return false
@@ -75,7 +81,7 @@ class RequestFiltererImpl @Inject constructor(
         currentPage = url
         hasTimeElapsed = false
         if (job?.isActive == true) job?.cancel()
-        job = scope.launch {
+        job = scope.launch(dispatcherProvider.io()) {
             delay(windowInMs)
             hasTimeElapsed = true
         }

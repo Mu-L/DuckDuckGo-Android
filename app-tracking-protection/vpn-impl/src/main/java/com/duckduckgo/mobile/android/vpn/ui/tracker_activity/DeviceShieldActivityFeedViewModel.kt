@@ -18,15 +18,15 @@ package com.duckduckgo.mobile.android.vpn.ui.tracker_activity
 
 import androidx.lifecycle.*
 import com.duckduckgo.anvil.annotations.ContributesViewModel
-import com.duckduckgo.app.global.DispatcherProvider
-import com.duckduckgo.app.global.formatters.time.TimeDiffFormatter
+import com.duckduckgo.common.utils.DispatcherProvider
+import com.duckduckgo.common.utils.formatters.time.TimeDiffFormatter
 import com.duckduckgo.di.scopes.FragmentScope
 import com.duckduckgo.mobile.android.vpn.AppTpVpnFeature
 import com.duckduckgo.mobile.android.vpn.apps.TrackingProtectionAppInfo
 import com.duckduckgo.mobile.android.vpn.apps.TrackingProtectionAppsRepository
 import com.duckduckgo.mobile.android.vpn.apps.ui.TrackingProtectionExclusionListActivity
-import com.duckduckgo.mobile.android.vpn.model.BucketizedVpnTracker
 import com.duckduckgo.mobile.android.vpn.model.TrackingApp
+import com.duckduckgo.mobile.android.vpn.model.VpnTrackerWithEntity
 import com.duckduckgo.mobile.android.vpn.state.VpnStateMonitor
 import com.duckduckgo.mobile.android.vpn.state.VpnStateMonitor.VpnRunningState.DISABLED
 import com.duckduckgo.mobile.android.vpn.state.VpnStateMonitor.VpnState
@@ -40,6 +40,7 @@ import com.duckduckgo.mobile.android.vpn.ui.tracker_activity.model.TrackerFeedIt
 import com.duckduckgo.mobile.android.vpn.ui.tracker_activity.model.TrackerFeedItem.TrackerDescriptionFeed
 import com.duckduckgo.mobile.android.vpn.ui.tracker_activity.model.TrackerFeedItem.TrackerLoadingSkeleton
 import java.lang.Integer.min
+import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.coroutines.coroutineContext
@@ -48,7 +49,6 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import logcat.logcat
-import org.threeten.bp.LocalDateTime
 
 @ContributesViewModel(FragmentScope::class)
 class DeviceShieldActivityFeedViewModel @Inject constructor(
@@ -120,7 +120,7 @@ class DeviceShieldActivityFeedViewModel @Inject constructor(
                 }
                 TrackerFeedViewState(trackers + appDataItems, trackerIntermediateState.runningState)
             }
-            .flowOn(dispatcherProvider.default())
+            .flowOn(dispatcherProvider.io())
             .onStart {
                 startTickerRefresher()
                 emit(TrackerFeedViewState(listOf(TrackerLoadingSkeleton), VpnState(DISABLED, ERROR)))
@@ -131,7 +131,9 @@ class DeviceShieldActivityFeedViewModel @Inject constructor(
     fun trackerListDisplayed(viewState: TrackerFeedViewState) {
         viewModelScope.launch {
             if (viewState.trackers.isNotEmpty() && viewState.trackers.first() != TrackerLoadingSkeleton) {
-                command.send(Command.TrackerListDisplayed(viewState.trackers.size))
+                command.send(
+                    Command.TrackerListDisplayed(viewState.trackers.count { it is TrackerFeedItem.TrackerFeedData }),
+                )
             }
         }
     }
@@ -201,32 +203,32 @@ class DeviceShieldActivityFeedViewModel @Inject constructor(
     }
 
     private suspend fun aggregateDataPerApp(
-        trackerData: List<BucketizedVpnTracker>,
+        trackerData: List<VpnTrackerWithEntity>,
         showHeadings: Boolean,
     ): List<TrackerFeedItem> {
         val sourceData = mutableListOf<TrackerFeedItem>()
-        val perSessionData = trackerData.groupBy { it.trackerCompanySignal.tracker.bucket }
+        val perSessionData = trackerData.groupBy { it.tracker.bucket }
 
         perSessionData.values.forEach { sessionTrackers ->
             coroutineContext.ensureActive()
 
-            val perAppData = sessionTrackers.groupBy { it.trackerCompanySignal.tracker.trackingApp.packageId }
+            val perAppData = sessionTrackers.groupBy { it.tracker.trackingApp.packageId }
             var firstInBucket = true
 
             perAppData.values.forEach { appTrackers ->
-                val item = appTrackers.sortedByDescending { it.trackerCompanySignal.tracker.timestamp }.first()
+                val item = appTrackers.sortedByDescending { it.tracker.timestamp }.first()
 
                 var totalTrackerCount = 0
-                val perTrackerData = appTrackers.groupBy { it.trackerCompanySignal.tracker.company }
+                val perTrackerData = appTrackers.groupBy { it.tracker.company }
                 val trackingCompanyInfo = mutableListOf<TrackingCompanyInfo>()
                 perTrackerData.forEach { trackerBucket ->
-                    val trackerCompanyName = trackerBucket.value.first().trackerCompanySignal.tracker.company
-                    val trackerCompanyDisplayName = trackerBucket.value.first().trackerCompanySignal.tracker.companyDisplayName
+                    val trackerCompanyName = trackerBucket.value.first().tracker.company
+                    val trackerCompanyDisplayName = trackerBucket.value.first().tracker.companyDisplayName
                     val timestamp =
                         trackerBucket.value
-                            .sortedByDescending { it.trackerCompanySignal.tracker.timestamp }
-                            .first().trackerCompanySignal.tracker.timestamp
-                    val trackerCompanyPrevalence = trackerBucket.value.first().trackerCompanySignal.trackerEntity.score
+                            .sortedByDescending { it.tracker.timestamp }
+                            .first().tracker.timestamp
+                    val trackerCompanyPrevalence = trackerBucket.value.first().trackerEntity.score
                     trackingCompanyInfo.add(
                         TrackingCompanyInfo(
                             companyName = trackerCompanyName,
@@ -235,7 +237,7 @@ class DeviceShieldActivityFeedViewModel @Inject constructor(
                             companyPrevalence = trackerCompanyPrevalence,
                         ),
                     )
-                    totalTrackerCount += trackerBucket.value.sumOf { it.trackerCompanySignal.tracker.count }
+                    totalTrackerCount += trackerBucket.value.sumOf { it.tracker.count }
                 }
 
                 if (firstInBucket && showHeadings) {
@@ -243,7 +245,7 @@ class DeviceShieldActivityFeedViewModel @Inject constructor(
                         TrackerFeedItem.TrackerFeedItemHeader(
                             timeDiffFormatter.formatTimePassedInDays(
                                 LocalDateTime.now(),
-                                LocalDateTime.parse(item.trackerCompanySignal.tracker.timestamp),
+                                LocalDateTime.parse(item.tracker.timestamp),
                             ),
                         ),
                     ).also { firstInBucket = false }
@@ -251,18 +253,18 @@ class DeviceShieldActivityFeedViewModel @Inject constructor(
 
                 sourceData.add(
                     TrackerFeedItem.TrackerFeedData(
-                        id = item.trackerCompanySignal.tracker.bucket.hashCode() + item.trackerCompanySignal.tracker.trackingApp.packageId.hashCode(),
-                        bucket = item.trackerCompanySignal.tracker.bucket,
+                        id = item.tracker.bucket.hashCode() + item.tracker.trackingApp.packageId.hashCode(),
+                        bucket = item.tracker.bucket,
                         trackingApp = TrackingApp(
-                            item.trackerCompanySignal.tracker.trackingApp.packageId,
-                            item.trackerCompanySignal.tracker.trackingApp.appDisplayName,
+                            item.tracker.trackingApp.packageId,
+                            item.tracker.trackingApp.appDisplayName,
                         ),
                         trackersTotalCount = totalTrackerCount,
                         trackingCompanyBadges = mapTrackingCompanies(trackingCompanyInfo),
-                        timestamp = item.trackerCompanySignal.tracker.timestamp,
+                        timestamp = item.tracker.timestamp,
                         displayTimestamp = timeDiffFormatter.formatTimePassed(
                             LocalDateTime.now(),
-                            LocalDateTime.parse(item.trackerCompanySignal.tracker.timestamp),
+                            LocalDateTime.parse(item.tracker.timestamp),
                         ),
                     ),
                 )

@@ -19,10 +19,10 @@ package com.duckduckgo.autoconsent.impl.handlers
 import android.webkit.WebView
 import androidx.core.net.toUri
 import com.duckduckgo.app.di.AppCoroutineScope
-import com.duckduckgo.app.global.DispatcherProvider
 import com.duckduckgo.autoconsent.api.AutoconsentCallback
 import com.duckduckgo.autoconsent.impl.MessageHandlerPlugin
 import com.duckduckgo.autoconsent.impl.adapters.JSONObjectAdapter
+import com.duckduckgo.common.utils.DispatcherProvider
 import com.duckduckgo.di.scopes.AppScope
 import com.squareup.anvil.annotations.ContributesMultibinding
 import com.squareup.moshi.JsonAdapter
@@ -58,7 +58,7 @@ class OptOutAndAutoconsentDoneMessageHandlerPlugin @Inject constructor(
             val message: OptOutResultMessage = parseOptOutMessage(jsonString) ?: return
 
             if (!message.result) {
-                autoconsentCallback.onResultReceived(consentManaged = true, optOutFailed = true, selfTestFailed = false)
+                autoconsentCallback.onResultReceived(consentManaged = true, optOutFailed = true, selfTestFailed = false, isCosmetic = null)
             } else if (message.scheduleSelfTest) {
                 selfTest = true
             }
@@ -72,8 +72,8 @@ class OptOutAndAutoconsentDoneMessageHandlerPlugin @Inject constructor(
             val message: AutoconsentDoneMessage = parseAutoconsentDoneMessage(jsonString) ?: return
             message.url.toUri().host ?: return
 
-            autoconsentCallback.onPopUpHandled()
-            autoconsentCallback.onResultReceived(consentManaged = true, optOutFailed = false, selfTestFailed = false)
+            autoconsentCallback.onPopUpHandled(message.isCosmetic)
+            autoconsentCallback.onResultReceived(consentManaged = true, optOutFailed = false, selfTestFailed = false, isCosmetic = message.isCosmetic)
 
             if (selfTest) {
                 appCoroutineScope.launch(dispatcherProvider.main()) {
@@ -98,7 +98,7 @@ class OptOutAndAutoconsentDoneMessageHandlerPlugin @Inject constructor(
 
     data class OptOutResultMessage(val type: String, val cmp: String, val result: Boolean, val scheduleSelfTest: Boolean, val url: String)
 
-    data class AutoconsentDoneMessage(val type: String, val cmp: String, val url: String)
+    data class AutoconsentDoneMessage(val type: String, val cmp: String, val url: String, val isCosmetic: Boolean)
 
     companion object {
         const val OPT_OUT = "optOutResult"

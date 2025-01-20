@@ -20,10 +20,9 @@ import android.content.Context
 import android.content.res.Resources
 import androidx.lifecycle.LifecycleOwner
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.duckduckgo.app.CoroutineTestRule
-import com.duckduckgo.app.FileUtilities.loadResource
+import com.duckduckgo.common.test.CoroutineTestRule
+import com.duckduckgo.common.test.FileUtilities.loadResource
 import com.duckduckgo.privacy.config.impl.PrivacyConfigPersister
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -31,11 +30,11 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class LocalPrivacyConfigObserverTest {
 
@@ -64,7 +63,7 @@ class LocalPrivacyConfigObserverTest {
 
             testee.onCreate(lifecycleOwner)
 
-            verify(mockPrivacyConfigPersister).persistPrivacyConfig(any())
+            verify(mockPrivacyConfigPersister).persistPrivacyConfig(any(), eq(null))
         }
 
     private fun givenLocalPrivacyConfigFileExists() {

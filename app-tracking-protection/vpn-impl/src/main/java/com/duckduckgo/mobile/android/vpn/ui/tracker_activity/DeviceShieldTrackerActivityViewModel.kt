@@ -21,12 +21,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.duckduckgo.anvil.annotations.ContributesViewModel
-import com.duckduckgo.app.global.DispatcherProvider
-import com.duckduckgo.app.global.formatters.time.model.dateOfLastWeek
+import com.duckduckgo.common.utils.DispatcherProvider
+import com.duckduckgo.common.utils.formatters.time.model.dateOfLastWeek
 import com.duckduckgo.di.scopes.ActivityScope
 import com.duckduckgo.mobile.android.vpn.AppTpVpnFeature
 import com.duckduckgo.mobile.android.vpn.feature.removal.VpnFeatureRemover
-import com.duckduckgo.mobile.android.vpn.network.VpnDetector
+import com.duckduckgo.mobile.android.vpn.network.ExternalVpnDetector
 import com.duckduckgo.mobile.android.vpn.pixels.DeviceShieldPixels
 import com.duckduckgo.mobile.android.vpn.state.VpnStateMonitor
 import com.duckduckgo.mobile.android.vpn.state.VpnStateMonitor.VpnState
@@ -47,7 +47,7 @@ class DeviceShieldTrackerActivityViewModel @Inject constructor(
     private val deviceShieldPixels: DeviceShieldPixels,
     private val appTrackerBlockingStatsRepository: AppTrackerBlockingStatsRepository,
     private val vpnStateMonitor: VpnStateMonitor,
-    private val vpnDetector: VpnDetector,
+    private val vpnDetector: ExternalVpnDetector,
     private val vpnFeatureRemover: VpnFeatureRemover,
     private val vpnStore: VpnStore,
     private val dispatcherProvider: DispatcherProvider,
@@ -78,21 +78,21 @@ class DeviceShieldTrackerActivityViewModel @Inject constructor(
     }
 
     internal fun onAppTPToggleSwitched(enabled: Boolean) {
-        when {
-            enabled && vpnDetector.isVpnDetected() -> sendCommand(Command.ShowVpnConflictDialog)
-            enabled == true -> sendCommand(Command.CheckVPNPermission)
-            enabled == false -> sendCommand(Command.ShowDisableVpnConfirmationDialog)
-        }
-        // If the VPN is not started due to any issue, the getRunningState() won't be updated and the toggle is kept (wrongly) in ON state
-        // Check after 1 second to ensure this doesn't happen
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcherProvider.io()) {
+            when {
+                enabled && vpnDetector.isExternalVpnDetected() -> sendCommand(Command.ShowVpnConflictDialog)
+                enabled == true -> sendCommand(Command.CheckVPNPermission)
+                enabled == false -> sendCommand(Command.ShowDisableVpnConfirmationDialog)
+            }
+            // If the VPN is not started due to any issue, the getRunningState() won't be updated and the toggle is kept (wrongly) in ON state
+            // Check after 1 second to ensure this doesn't happen
             delay(TimeUnit.SECONDS.toMillis(1))
             refreshVpnRunningState.emit(System.currentTimeMillis())
         }
     }
 
     private suspend fun shouldPromoteAlwaysOnOnAppTPEnable(): Boolean {
-        return !vpnStore.isAlwaysOnEnabled() && vpnStore.vpnLastDisabledByAndroid()
+        return !vpnStateMonitor.isAlwaysOnEnabled() && vpnStateMonitor.vpnLastDisabledByAndroid()
     }
 
     private fun sendCommand(newCommand: Command) {
@@ -126,7 +126,6 @@ class DeviceShieldTrackerActivityViewModel @Inject constructor(
     fun showAppTpEnabledCtaIfNeeded() {
         if (!vpnStore.didShowAppTpEnabledCta()) {
             vpnStore.appTpEnabledCtaDidShow()
-            vpnStore.onOnboardingSessionSet()
             sendCommand(Command.ShowAppTpEnabledCta)
         }
     }
@@ -194,23 +193,9 @@ class DeviceShieldTrackerActivityViewModel @Inject constructor(
         }
     }
 
-    fun bannerState(): BannerState {
-        return if (vpnStore.isOnboardingSession()) {
-            BannerState.OnboardingBanner
-        } else {
-            BannerState.NextSessionBanner
-        }
-    }
-
-    sealed class BannerState {
-        object OnboardingBanner : BannerState()
-        object NextSessionBanner : BannerState()
-    }
-
     internal data class TrackerActivityViewState(
         val trackerCountInfo: TrackerCountInfo,
         val runningState: VpnState,
-        val bannerState: BannerState,
     )
 
     internal data class TrackerCountInfo(

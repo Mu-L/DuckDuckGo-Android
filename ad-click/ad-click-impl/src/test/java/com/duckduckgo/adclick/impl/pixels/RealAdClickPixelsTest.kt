@@ -19,9 +19,12 @@ package com.duckduckgo.adclick.impl.pixels
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.duckduckgo.adclick.impl.Exemption
-import com.duckduckgo.app.global.api.InMemorySharedPreferences
 import com.duckduckgo.app.statistics.pixels.Pixel
+import com.duckduckgo.app.statistics.pixels.Pixel.PixelType.Count
+import com.duckduckgo.common.test.api.InMemorySharedPreferences
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -35,12 +38,8 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
-import org.threeten.bp.Instant
 
-@RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE)
+@RunWith(AndroidJUnit4::class)
 class RealAdClickPixelsTest {
 
     private lateinit var testee: AdClickPixels
@@ -249,6 +248,7 @@ class RealAdClickPixelsTest {
             pixel = eq(AdClickPixelName.AD_CLICK_PAGELOADS_WITH_AD_ATTRIBUTION),
             parameters = any(),
             encodedParameters = any(),
+            type = eq(Count),
         )
     }
 
@@ -264,6 +264,7 @@ class RealAdClickPixelsTest {
             pixel = eq(AdClickPixelName.AD_CLICK_PAGELOADS_WITH_AD_ATTRIBUTION),
             parameters = eq(mapOf(AdClickPixelParameters.AD_CLICK_PAGELOADS_WITH_AD_ATTRIBUTION_COUNT to "1")),
             encodedParameters = any(),
+            type = eq(Count),
         )
     }
 
@@ -282,6 +283,7 @@ class RealAdClickPixelsTest {
             pixel = eq(AdClickPixelName.AD_CLICK_PAGELOADS_WITH_AD_ATTRIBUTION),
             parameters = any(),
             encodedParameters = any(),
+            type = eq(Count),
         )
     }
 
@@ -300,6 +302,7 @@ class RealAdClickPixelsTest {
             pixel = eq(AdClickPixelName.AD_CLICK_PAGELOADS_WITH_AD_ATTRIBUTION),
             parameters = eq(mapOf(AdClickPixelParameters.AD_CLICK_PAGELOADS_WITH_AD_ATTRIBUTION_COUNT to "1")),
             encodedParameters = any(),
+            type = eq(Count),
         )
     }
 }

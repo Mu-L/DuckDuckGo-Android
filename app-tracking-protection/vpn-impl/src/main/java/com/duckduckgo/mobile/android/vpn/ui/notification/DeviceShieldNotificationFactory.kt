@@ -20,11 +20,12 @@ import android.content.res.Resources
 import android.text.SpannableStringBuilder
 import androidx.annotation.VisibleForTesting
 import androidx.core.text.HtmlCompat
-import com.duckduckgo.app.global.formatters.time.model.dateOfLastDay
-import com.duckduckgo.app.global.formatters.time.model.dateOfLastWeek
+import com.duckduckgo.common.utils.formatters.time.model.dateOfLastDay
+import com.duckduckgo.common.utils.formatters.time.model.dateOfLastWeek
 import com.duckduckgo.mobile.android.vpn.R
 import com.duckduckgo.mobile.android.vpn.model.TrackingApp
 import com.duckduckgo.mobile.android.vpn.model.VpnTracker
+import com.duckduckgo.mobile.android.vpn.service.VpnEnabledNotificationContentPlugin
 import com.duckduckgo.mobile.android.vpn.stats.AppTrackerBlockingStatsRepository
 import javax.inject.Inject
 import kotlinx.coroutines.flow.firstOrNull
@@ -49,25 +50,6 @@ class DeviceShieldNotificationFactory @Inject constructor(
     suspend fun createWeeklyDeviceShieldNotification(): DeviceShieldNotification {
         val randomNumber = (0..1).shuffled().first()
         return weeklyNotificationFactory.createWeeklyDeviceShieldNotification(randomNumber)
-    }
-
-    fun createNotificationDeviceShieldEnabled(): DeviceShieldNotification {
-        val title = SpannableStringBuilder(resources.getString(R.string.atp_OnInitialNotification))
-        return DeviceShieldNotification(title)
-    }
-
-    fun createNotificationNewTrackerFound(trackersBlocked: List<VpnTracker>): DeviceShieldNotification {
-        val numberOfApps = trackersBlocked.distinctBy { it.trackingApp.packageId }
-        if (trackersBlocked.isEmpty() || numberOfApps.isEmpty()) {
-            return DeviceShieldNotification(SpannableStringBuilder(resources.getString(R.string.atp_OnNoTrackersNotificationHeader)))
-        }
-
-        val notificationText = resources.getQuantityString(R.plurals.atp_OnNotification, numberOfApps.size, numberOfApps.size)
-
-        logcat { "createTrackersCountDeviceShieldNotification [$notificationText]" }
-        return DeviceShieldNotification(
-            SpannableStringBuilder(HtmlCompat.fromHtml(notificationText, HtmlCompat.FROM_HTML_MODE_LEGACY)),
-        )
     }
 
     private fun getNumberOfAppsContainingTopOffender(
@@ -335,10 +317,17 @@ class DeviceShieldNotificationFactory @Inject constructor(
     }
 
     data class DeviceShieldNotification(
-        val title: SpannableStringBuilder = SpannableStringBuilder(),
-        val message: SpannableStringBuilder = SpannableStringBuilder(),
+        val text: SpannableStringBuilder = SpannableStringBuilder(),
         val silent: Boolean = false,
         val hidden: Boolean = false,
         val notificationVariant: Int = -1, // default no variant
-    )
+    ) {
+        companion object {
+            fun from(content: VpnEnabledNotificationContentPlugin.VpnEnabledNotificationContent): DeviceShieldNotification {
+                return DeviceShieldNotification(
+                    text = SpannableStringBuilder(content.text),
+                )
+            }
+        }
+    }
 }

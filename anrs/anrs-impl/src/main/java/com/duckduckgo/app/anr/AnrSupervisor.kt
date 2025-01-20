@@ -21,14 +21,18 @@ import android.os.Handler
 import android.os.Looper
 import com.duckduckgo.app.anrs.store.AnrsDatabase
 import com.duckduckgo.browser.api.BrowserLifecycleObserver
+import com.duckduckgo.browser.api.WebViewVersionProvider
+import com.duckduckgo.customtabs.api.CustomTabDetector
 import com.duckduckgo.di.scopes.AppScope
 import com.squareup.anvil.annotations.ContributesMultibinding
+import dagger.SingleInstanceIn
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
-import timber.log.Timber
+import logcat.logcat
 
 @ContributesMultibinding(AppScope::class)
+@SingleInstanceIn(AppScope::class)
 class AnrSupervisor @Inject constructor(
     private val anrSupervisorRunnable: AnrSupervisorRunnable,
 ) : BrowserLifecycleObserver {
@@ -55,6 +59,8 @@ internal fun Any.wait(timeout: Long = 0) = (this as Object).wait(timeout)
 internal fun Any.notifyAll() = (this as Object).notifyAll()
 
 class AnrSupervisorRunnable @Inject constructor(
+    private val webViewVersionProvider: WebViewVersionProvider,
+    private val customTabDetector: CustomTabDetector,
     anrsDatabase: AnrsDatabase,
 ) : Runnable {
 
@@ -74,7 +80,7 @@ class AnrSupervisorRunnable @Inject constructor(
 
         while (!Thread.interrupted()) {
             try {
-                Timber.v("AnrSupervisor checking for ANRs...")
+                logcat { "AnrSupervisor checking for ANRs..." }
 
                 val callback = Callback()
                 synchronized(callback) {
@@ -82,12 +88,12 @@ class AnrSupervisorRunnable @Inject constructor(
                     callback.wait(ANR_THRESHOLD_MILLIS)
 
                     if (callback.isCalled) {
-                        Timber.d("UI Thread responded within ${ANR_THRESHOLD_MILLIS}ms")
+                        logcat { "UI Thread responded within ${ANR_THRESHOLD_MILLIS}ms" }
                     } else {
                         val e = AnrException(handler.looper.thread)
-                        Timber.e("ANR Detected: ${e.threadStateMap}")
+                        logcat { "In custom tab: ${customTabDetector.isCustomTab()}. ANR Detected: ${e.threadStateMap}." }
 
-                        anrDao.insert(e.asExceptionData().asAnrEntity())
+                        anrDao.insert(e.asAnrData(webViewVersionProvider.getFullVersion(), customTabDetector.isCustomTab()).asAnrEntity())
 
                         // wait until thread responds again
                         callback.wait()
@@ -101,16 +107,16 @@ class AnrSupervisorRunnable @Inject constructor(
         }
 
         stop()
-        Timber.v("AnrSupervisor stopped")
+        logcat { "AnrSupervisor stopped" }
     }
 
     fun stop() {
-        Timber.v("AnrSupervisor stopping...")
+        logcat { "AnrSupervisor stopping..." }
         stopped.set(true)
     }
 
     private fun unstop() {
-        Timber.v("AnrSupervisor revert stopping...")
+        logcat { "AnrSupervisor revert stopping..." }
         stopped.set(false)
     }
 

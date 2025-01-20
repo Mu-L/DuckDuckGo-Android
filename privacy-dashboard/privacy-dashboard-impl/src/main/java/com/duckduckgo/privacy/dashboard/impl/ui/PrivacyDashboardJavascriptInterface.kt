@@ -20,13 +20,20 @@ import android.webkit.JavascriptInterface
 
 class PrivacyDashboardJavascriptInterface constructor(
     val onBrokenSiteClicked: () -> Unit,
-    val onPrivacyProtectionsClicked: (Boolean) -> Unit,
+    val onPrivacyProtectionsClicked: (String) -> Unit,
     val onUrlClicked: (String) -> Unit,
+    val onOpenSettings: (String) -> Unit,
     val onClose: () -> Unit,
+    val onSubmitBrokenSiteReport: (String) -> Unit,
+    val onGetToggleReportOptions: () -> Unit,
+    val onSendToggleReport: () -> Unit,
+    val onRejectToggleReport: () -> Unit,
+    val onSeeWhatIsSent: () -> Unit,
+    val onShowNativeFeedback: () -> Unit,
 ) {
     @JavascriptInterface
-    fun toggleAllowlist(newValue: String) {
-        onPrivacyProtectionsClicked(newValue.toBoolean())
+    fun toggleAllowlist(payload: String) {
+        onPrivacyProtectionsClicked(payload)
     }
 
     @JavascriptInterface
@@ -42,6 +49,41 @@ class PrivacyDashboardJavascriptInterface constructor(
     @JavascriptInterface
     fun openInNewTab(payload: String) {
         onUrlClicked(payload)
+    }
+
+    @JavascriptInterface
+    fun openSettings(payload: String) {
+        onOpenSettings(payload)
+    }
+
+    @JavascriptInterface
+    fun submitBrokenSiteReport(payload: String) {
+        onSubmitBrokenSiteReport(payload)
+    }
+
+    @JavascriptInterface
+    fun getToggleReportOptions() {
+        onGetToggleReportOptions()
+    }
+
+    @JavascriptInterface
+    fun sendToggleReport() {
+        onSendToggleReport()
+    }
+
+    @JavascriptInterface
+    fun rejectToggleReport() {
+        onRejectToggleReport()
+    }
+
+    @JavascriptInterface
+    fun seeWhatIsSent() {
+        onSeeWhatIsSent()
+    }
+
+    @JavascriptInterface
+    fun showNativeFeedback() {
+        onShowNativeFeedback()
     }
 
     companion object {

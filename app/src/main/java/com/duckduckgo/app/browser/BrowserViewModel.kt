@@ -20,26 +20,41 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.duckduckgo.anvil.annotations.ContributesRemoteFeature
 import com.duckduckgo.anvil.annotations.ContributesViewModel
-import com.duckduckgo.app.browser.BrowserViewModel.Command.Refresh
+import com.duckduckgo.app.browser.defaultbrowsing.DefaultBrowserDetector
 import com.duckduckgo.app.browser.omnibar.OmnibarEntryConverter
-import com.duckduckgo.app.browser.rating.ui.AppEnjoymentDialogFragment
-import com.duckduckgo.app.browser.rating.ui.GiveFeedbackDialogFragment
-import com.duckduckgo.app.browser.rating.ui.RateAppDialogFragment
 import com.duckduckgo.app.fire.DataClearer
+import com.duckduckgo.app.generalsettings.showonapplaunch.ShowOnAppLaunchFeature
+import com.duckduckgo.app.generalsettings.showonapplaunch.ShowOnAppLaunchOptionHandler
 import com.duckduckgo.app.global.ApplicationClearDataState
-import com.duckduckgo.app.global.DispatcherProvider
-import com.duckduckgo.app.global.SingleLiveEvent
 import com.duckduckgo.app.global.rating.AppEnjoymentPromptEmitter
 import com.duckduckgo.app.global.rating.AppEnjoymentPromptOptions
 import com.duckduckgo.app.global.rating.AppEnjoymentUserEventRecorder
 import com.duckduckgo.app.global.rating.PromptCount
 import com.duckduckgo.app.pixels.AppPixelName
+import com.duckduckgo.app.pixels.AppPixelName.APP_ENJOYMENT_DIALOG_SHOWN
+import com.duckduckgo.app.pixels.AppPixelName.APP_ENJOYMENT_DIALOG_USER_CANCELLED
+import com.duckduckgo.app.pixels.AppPixelName.APP_ENJOYMENT_DIALOG_USER_ENJOYING
+import com.duckduckgo.app.pixels.AppPixelName.APP_ENJOYMENT_DIALOG_USER_NOT_ENJOYING
+import com.duckduckgo.app.pixels.AppPixelName.APP_FEEDBACK_DIALOG_SHOWN
+import com.duckduckgo.app.pixels.AppPixelName.APP_FEEDBACK_DIALOG_USER_CANCELLED
+import com.duckduckgo.app.pixels.AppPixelName.APP_FEEDBACK_DIALOG_USER_DECLINED_FEEDBACK
+import com.duckduckgo.app.pixels.AppPixelName.APP_FEEDBACK_DIALOG_USER_GAVE_FEEDBACK
+import com.duckduckgo.app.pixels.AppPixelName.APP_RATING_DIALOG_SHOWN
+import com.duckduckgo.app.pixels.AppPixelName.APP_RATING_DIALOG_USER_CANCELLED
+import com.duckduckgo.app.pixels.AppPixelName.APP_RATING_DIALOG_USER_DECLINED_RATING
+import com.duckduckgo.app.pixels.AppPixelName.APP_RATING_DIALOG_USER_GAVE_RATING
 import com.duckduckgo.app.statistics.pixels.Pixel
+import com.duckduckgo.app.statistics.pixels.Pixel.PixelParameter
 import com.duckduckgo.app.tabs.model.TabEntity
 import com.duckduckgo.app.tabs.model.TabRepository
+import com.duckduckgo.common.utils.DispatcherProvider
+import com.duckduckgo.common.utils.SingleLiveEvent
 import com.duckduckgo.di.scopes.ActivityScope
-import com.duckduckgo.privacy.dashboard.impl.ui.PrivacyDashboardHybridActivity.Companion.RELOAD_RESULT_CODE
+import com.duckduckgo.di.scopes.AppScope
+import com.duckduckgo.feature.toggles.api.Toggle
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
@@ -53,12 +68,13 @@ class BrowserViewModel @Inject constructor(
     private val dataClearer: DataClearer,
     private val appEnjoymentPromptEmitter: AppEnjoymentPromptEmitter,
     private val appEnjoymentUserEventRecorder: AppEnjoymentUserEventRecorder,
+    private val defaultBrowserDetector: DefaultBrowserDetector,
     private val dispatchers: DispatcherProvider,
     private val pixel: Pixel,
-) : AppEnjoymentDialogFragment.Listener,
-    RateAppDialogFragment.Listener,
-    GiveFeedbackDialogFragment.Listener,
-    ViewModel(),
+    private val skipUrlConversionOnNewTabFeature: SkipUrlConversionOnNewTabFeature,
+    private val showOnAppLaunchFeature: ShowOnAppLaunchFeature,
+    private val showOnAppLaunchOptionHandler: ShowOnAppLaunchOptionHandler,
+) : ViewModel(),
     CoroutineScope {
 
     override val coroutineContext: CoroutineContext
@@ -69,13 +85,13 @@ class BrowserViewModel @Inject constructor(
     )
 
     sealed class Command {
-        object Refresh : Command()
         data class Query(val query: String) : Command()
         object LaunchPlayStore : Command()
         object LaunchFeedbackView : Command()
         data class ShowAppEnjoymentPrompt(val promptCount: PromptCount) : Command()
         data class ShowAppRatingPrompt(val promptCount: PromptCount) : Command()
         data class ShowAppFeedbackPrompt(val promptCount: PromptCount) : Command()
+        data class OpenSavedSite(val url: String) : Command()
     }
 
     var viewState: MutableLiveData<ViewState> = MutableLiveData<ViewState>().also {
@@ -138,15 +154,21 @@ class BrowserViewModel @Inject constructor(
         sourceTabId: String? = null,
         skipHome: Boolean = false,
     ): String {
+        val url = if (skipUrlConversionOnNewTabFeature.self().isEnabled()) {
+            query
+        } else {
+            queryUrlConverter.convertQueryToUrl(query)
+        }
+
         return if (sourceTabId != null) {
             tabRepository.addFromSourceTab(
-                url = queryUrlConverter.convertQueryToUrl(query),
+                url = url,
                 skipHome = skipHome,
                 sourceTabId = sourceTabId,
             )
         } else {
             tabRepository.add(
-                url = queryUrlConverter.convertQueryToUrl(query),
+                url = url,
                 skipHome = skipHome,
             )
         }
@@ -157,16 +179,19 @@ class BrowserViewModel @Inject constructor(
         tabRepository.selectByUrlOrNewTab(queryUrlConverter.convertQueryToUrl(query))
     }
 
+    fun launchFromThirdParty() {
+        pixel.fire(
+            AppPixelName.APP_THIRD_PARTY_LAUNCH,
+            mapOf(PixelParameter.DEFAULT_BROWSER to defaultBrowserDetector.isDefaultBrowser().toString()),
+        )
+    }
+
     suspend fun onTabsUpdated(tabs: List<TabEntity>?) {
         if (tabs.isNullOrEmpty()) {
             Timber.i("Tabs list is null or empty; adding default tab")
             tabRepository.addDefaultTab()
             return
         }
-    }
-
-    fun receivedDashboardResult(resultCode: Int) {
-        if (resultCode == RELOAD_RESULT_CODE) command.value = Refresh
     }
 
     /**
@@ -184,44 +209,70 @@ class BrowserViewModel @Inject constructor(
         appEnjoymentPromptEmitter.promptType.removeObserver(appEnjoymentObserver)
     }
 
-    override fun onUserSelectedAppIsEnjoyed(promptCount: PromptCount) {
+    private fun firePixelWithPromptCount(name: Pixel.PixelName, promptCount: PromptCount) {
+        val formattedPixelName = String.format(name.pixelName, promptCount.value)
+        pixel.fire(formattedPixelName)
+    }
+
+    fun onAppEnjoymentDialogShown(promptCount: PromptCount) {
+        firePixelWithPromptCount(APP_ENJOYMENT_DIALOG_SHOWN, promptCount)
+    }
+
+    fun onAppRatingDialogShown(promptCount: PromptCount) {
+        firePixelWithPromptCount(APP_RATING_DIALOG_SHOWN, promptCount)
+    }
+
+    fun onGiveFeedbackDialogShown(promptCount: PromptCount) {
+        firePixelWithPromptCount(APP_FEEDBACK_DIALOG_SHOWN, promptCount)
+    }
+
+    fun onUserSelectedAppIsEnjoyed(promptCount: PromptCount) {
+        firePixelWithPromptCount(APP_ENJOYMENT_DIALOG_USER_ENJOYING, promptCount)
         appEnjoymentUserEventRecorder.onUserEnjoyingApp(promptCount)
     }
 
-    override fun onUserSelectedAppIsNotEnjoyed(promptCount: PromptCount) {
+    fun onUserSelectedAppIsNotEnjoyed(promptCount: PromptCount) {
+        firePixelWithPromptCount(APP_ENJOYMENT_DIALOG_USER_NOT_ENJOYING, promptCount)
         appEnjoymentUserEventRecorder.onUserNotEnjoyingApp(promptCount)
     }
 
-    override fun onUserSelectedToRateApp(promptCount: PromptCount) {
+    fun onUserSelectedToRateApp(promptCount: PromptCount) {
+        firePixelWithPromptCount(APP_RATING_DIALOG_USER_GAVE_RATING, promptCount)
         command.value = Command.LaunchPlayStore
 
         launch { appEnjoymentUserEventRecorder.onUserSelectedToRateApp(promptCount) }
     }
 
-    override fun onUserDeclinedToRateApp(promptCount: PromptCount) {
+    fun onUserDeclinedToRateApp(promptCount: PromptCount) {
+        firePixelWithPromptCount(APP_RATING_DIALOG_USER_DECLINED_RATING, promptCount)
         launch { appEnjoymentUserEventRecorder.userDeclinedToRateApp(promptCount) }
     }
 
-    override fun onUserSelectedToGiveFeedback(promptCount: PromptCount) {
+    fun onUserCancelledRateAppDialog(promptCount: PromptCount) {
+        firePixelWithPromptCount(APP_RATING_DIALOG_USER_CANCELLED, promptCount)
+        launch { appEnjoymentUserEventRecorder.userDeclinedToRateApp(promptCount) }
+    }
+
+    fun onUserSelectedToGiveFeedback(promptCount: PromptCount) {
+        firePixelWithPromptCount(APP_FEEDBACK_DIALOG_USER_GAVE_FEEDBACK, promptCount)
         command.value = Command.LaunchFeedbackView
 
         launch { appEnjoymentUserEventRecorder.onUserSelectedToGiveFeedback(promptCount) }
     }
 
-    override fun onUserDeclinedToGiveFeedback(promptCount: PromptCount) {
+    fun onUserDeclinedToGiveFeedback(promptCount: PromptCount) {
+        firePixelWithPromptCount(APP_FEEDBACK_DIALOG_USER_DECLINED_FEEDBACK, promptCount)
         launch { appEnjoymentUserEventRecorder.onUserDeclinedToGiveFeedback(promptCount) }
     }
 
-    override fun onUserCancelledAppEnjoymentDialog(promptCount: PromptCount) {
+    fun onUserCancelledGiveFeedbackDialog(promptCount: PromptCount) {
+        firePixelWithPromptCount(APP_FEEDBACK_DIALOG_USER_CANCELLED, promptCount)
+        launch { appEnjoymentUserEventRecorder.onUserDeclinedToGiveFeedback(promptCount) }
+    }
+
+    fun onUserCancelledAppEnjoymentDialog(promptCount: PromptCount) {
+        firePixelWithPromptCount(APP_ENJOYMENT_DIALOG_USER_CANCELLED, promptCount)
         launch { appEnjoymentUserEventRecorder.onUserDeclinedToSayIfEnjoyingApp(promptCount) }
-    }
-
-    override fun onUserCancelledRateAppDialog(promptCount: PromptCount) {
-        onUserDeclinedToRateApp(promptCount)
-    }
-
-    override fun onUserCancelledGiveFeedbackDialog(promptCount: PromptCount) {
-        onUserDeclinedToGiveFeedback(promptCount)
     }
 
     fun onOpenShortcut(url: String) {
@@ -230,4 +281,47 @@ class BrowserViewModel @Inject constructor(
             pixel.fire(AppPixelName.SHORTCUT_OPENED)
         }
     }
+
+    fun onLaunchedFromNotification(pixelName: String) {
+        pixel.fire(pixelName)
+    }
+
+    fun onBookmarksActivityResult(url: String) {
+        command.value = Command.OpenSavedSite(url)
+    }
+
+    fun onTabSelected(tabId: String) {
+        launch(dispatchers.io()) {
+            tabRepository.select(tabId)
+        }
+    }
+
+    fun handleShowOnAppLaunchOption() {
+        if (showOnAppLaunchFeature.self().isEnabled()) {
+            viewModelScope.launch {
+                showOnAppLaunchOptionHandler.handleAppLaunchOption()
+            }
+        }
+    }
+
+    fun onTabActivated(tabId: String) {
+        viewModelScope.launch(dispatchers.io()) {
+            tabRepository.updateTabLastAccess(tabId)
+        }
+    }
+}
+
+/**
+ * Feature flag to skip converting the query to a URL when opening a new tab
+ * This is for fixing https://app.asana.com/0/1208134428464537/1207998553475892/f
+ *
+ * In case of unexpected side-effects, the old behaviour can be reverted by disabling this remote feature flag
+ */
+@ContributesRemoteFeature(
+    scope = AppScope::class,
+    featureName = "androidSkipUrlConversionOnNewTab",
+)
+interface SkipUrlConversionOnNewTabFeature {
+    @Toggle.DefaultValue(true)
+    fun self(): Toggle
 }

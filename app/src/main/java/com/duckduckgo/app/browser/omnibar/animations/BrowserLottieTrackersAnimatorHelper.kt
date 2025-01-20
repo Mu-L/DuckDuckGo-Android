@@ -37,10 +37,10 @@ import com.duckduckgo.app.browser.omnibar.animations.TrackerLogo.ImageLogo
 import com.duckduckgo.app.browser.omnibar.animations.TrackerLogo.LetterLogo
 import com.duckduckgo.app.browser.omnibar.animations.TrackerLogo.StackedLogo
 import com.duckduckgo.app.trackerdetection.model.Entity
+import com.duckduckgo.common.ui.store.AppTheme
+import com.duckduckgo.common.ui.view.gone
+import com.duckduckgo.common.ui.view.show
 import com.duckduckgo.di.scopes.FragmentScope
-import com.duckduckgo.mobile.android.ui.store.AppTheme
-import com.duckduckgo.mobile.android.ui.view.gone
-import com.duckduckgo.mobile.android.ui.view.show
 import com.squareup.anvil.annotations.ContributesBinding
 import javax.inject.Inject
 
@@ -55,9 +55,7 @@ class BrowserLottieTrackersAnimatorHelper @Inject constructor(
     private lateinit var cookieView: LottieAnimationView
     private lateinit var cookieScene: ViewGroup
     private lateinit var cookieViewBackground: View
-
-    private var runPartialAnimation: Boolean = false
-    private var completePartialAnimation: Boolean = false
+    private var cookieCosmeticHide: Boolean = false
 
     private var enqueueCookiesAnimation = false
     private var isCookiesAnimationRunning = false
@@ -68,16 +66,14 @@ class BrowserLottieTrackersAnimatorHelper @Inject constructor(
 
     override fun startTrackersAnimation(
         context: Context,
-        shouldRunPartialAnimation: Boolean,
         shieldAnimationView: LottieAnimationView,
         trackersAnimationView: LottieAnimationView,
         omnibarViews: List<View>,
         entities: List<Entity>?,
     ) {
         if (isCookiesAnimationRunning) return // If cookies animation is running let it finish to avoid weird glitches with the other animations
-        if (trackersAnimationView.isAnimating || this.runPartialAnimation) return
+        if (trackersAnimationView.isAnimating) return
 
-        this.runPartialAnimation = shouldRunPartialAnimation
         this.trackersAnimation = trackersAnimationView
         this.shieldAnimation = shieldAnimationView
 
@@ -102,17 +98,13 @@ class BrowserLottieTrackersAnimatorHelper @Inject constructor(
             this.addAnimatorListener(
                 object : AnimatorListener {
                     override fun onAnimationStart(animation: Animator) {
-                        if (completePartialAnimation) return
                         animateOmnibarOut(omnibarViews).start()
                     }
 
                     override fun onAnimationEnd(animation: Animator) {
-                        if (!runPartialAnimation) {
-                            animateOmnibarIn(omnibarViews).start()
-                            completePartialAnimation = false
-                            tryToStartCookiesAnimation(context, omnibarViews)
-                            listener?.onAnimationFinished()
-                        }
+                        animateOmnibarIn(omnibarViews).start()
+                        tryToStartCookiesAnimation(context, omnibarViews)
+                        listener?.onAnimationFinished()
                     }
 
                     override fun onAnimationCancel(animation: Animator) {
@@ -123,13 +115,8 @@ class BrowserLottieTrackersAnimatorHelper @Inject constructor(
                 },
             )
 
-            if (runPartialAnimation) {
-                this.setMaxProgress(0.5f)
-                shieldAnimationView.setMaxProgress(0.5f)
-            } else {
-                this.setMaxProgress(1f)
-                shieldAnimationView.setMaxProgress(1f)
-            }
+            this.setMaxProgress(1f)
+            shieldAnimationView.setMaxProgress(1f)
             shieldAnimationView.playAnimation()
             this.playAnimation()
         }
@@ -141,12 +128,14 @@ class BrowserLottieTrackersAnimatorHelper @Inject constructor(
         cookieBackground: View,
         cookieAnimationView: LottieAnimationView,
         cookieScene: ViewGroup,
+        cookieCosmeticHide: Boolean,
     ) {
         this.cookieScene = cookieScene
         this.cookieViewBackground = cookieBackground
         this.cookieView = cookieAnimationView
+        this.cookieCosmeticHide = cookieCosmeticHide
 
-        if (this.trackersAnimation?.isAnimating != true && !runPartialAnimation) {
+        if (this.trackersAnimation?.isAnimating != true) {
             startCookiesAnimation(context, omnibarViews)
         } else {
             enqueueCookiesAnimation = true
@@ -169,19 +158,6 @@ class BrowserLottieTrackersAnimatorHelper @Inject constructor(
         omnibarViews.forEach { it.alpha = 1f }
     }
 
-    override fun finishPartialTrackerAnimation() {
-        val trackersAnimation = this.trackersAnimation ?: return
-        val shieldAnimation = this.shieldAnimation ?: return
-
-        runPartialAnimation = false
-        completePartialAnimation = true
-
-        trackersAnimation.setMinAndMaxProgress(0.5f, 1f)
-        shieldAnimation.setMinAndMaxProgress(0.5f, 1f)
-        trackersAnimation.playAnimation()
-        shieldAnimation.playAnimation()
-    }
-
     private fun tryToStartCookiesAnimation(
         context: Context,
         omnibarViews: List<View>,
@@ -197,8 +173,14 @@ class BrowserLottieTrackersAnimatorHelper @Inject constructor(
         omnibarViews: List<View>,
     ) {
         isCookiesAnimationRunning = true
-        firstScene = Scene.getSceneForLayout(cookieScene, R.layout.cookie_scene_1, context)
-        secondScene = Scene.getSceneForLayout(cookieScene, R.layout.cookie_scene_2, context)
+
+        if (cookieCosmeticHide) {
+            firstScene = Scene.getSceneForLayout(cookieScene, R.layout.cookie_cosmetic_scene_1, context)
+            secondScene = Scene.getSceneForLayout(cookieScene, R.layout.cookie_cosmetic_scene_2, context)
+        } else {
+            firstScene = Scene.getSceneForLayout(cookieScene, R.layout.cookie_scene_1, context)
+            secondScene = Scene.getSceneForLayout(cookieScene, R.layout.cookie_scene_2, context)
+        }
 
         hasCookiesAnimationBeenCanceled = false
         val allOmnibarViews: List<View> = (omnibarViews).filterNotNull().toList()

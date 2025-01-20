@@ -19,7 +19,7 @@
 package com.duckduckgo.mobile.android.vpn.model
 
 import androidx.room.*
-import com.duckduckgo.app.global.formatters.time.DatabaseDateFormatter
+import com.duckduckgo.common.utils.formatters.time.DatabaseDateFormatter
 import com.duckduckgo.mobile.android.vpn.model.VpnStoppingReason.UNKNOWN
 import com.duckduckgo.mobile.android.vpn.trackers.AppTrackerEntity
 
@@ -37,10 +37,6 @@ data class VpnTracker(
     val timestamp: String = DatabaseDateFormatter.timestamp(),
     val bucket: String = DatabaseDateFormatter.timestamp().split("T").first(),
     val count: Int = 1,
-)
-
-data class BucketizedVpnTracker(
-    @Embedded val trackerCompanySignal: VpnTrackerCompanySignal,
 )
 
 enum class VpnServiceState {
@@ -81,11 +77,24 @@ data class TrackingApp(
     override fun toString(): String = "package=$packageId ($appDisplayName)"
 }
 
-data class VpnTrackerCompanySignal(
+internal data class VpnTrackerCompanySignal(
     @Embedded val tracker: VpnTracker,
     @Relation(
         parentColumn = "trackerCompanyId",
         entityColumn = "trackerCompanyId",
     )
+    val trackerEntity: AppTrackerEntity?,
+)
+
+internal fun List<VpnTrackerCompanySignal>.asListOfVpnTrackerWithEntity(): List<VpnTrackerWithEntity> {
+    return this.filter { it.trackerEntity != null }.map { VpnTrackerWithEntity(it.tracker, it.trackerEntity!!) }
+}
+
+internal fun List<VpnTrackerCompanySignal>.asListOfVpnTracker(): List<VpnTracker> {
+    return this.filter { it.trackerEntity != null }.map { it.tracker }
+}
+
+data class VpnTrackerWithEntity(
+    val tracker: VpnTracker,
     val trackerEntity: AppTrackerEntity,
 )

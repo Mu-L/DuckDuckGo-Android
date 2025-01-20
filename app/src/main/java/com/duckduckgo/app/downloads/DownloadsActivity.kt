@@ -27,21 +27,24 @@ import androidx.lifecycle.Lifecycle.State.STARTED
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.duckduckgo.anvil.annotations.ContributeToActivityStarter
 import com.duckduckgo.anvil.annotations.InjectWith
 import com.duckduckgo.app.browser.R
 import com.duckduckgo.app.browser.databinding.ActivityDownloadsBinding
+import com.duckduckgo.app.downloads.DownloadsScreens.DownloadsScreenNoParams
 import com.duckduckgo.app.downloads.DownloadsViewModel.Command
 import com.duckduckgo.app.downloads.DownloadsViewModel.Command.*
 import com.duckduckgo.app.downloads.DownloadsViewModel.ViewState
-import com.duckduckgo.app.global.DuckDuckGoActivity
+import com.duckduckgo.common.ui.DuckDuckGoActivity
+import com.duckduckgo.common.ui.view.SearchBar
+import com.duckduckgo.common.ui.view.gone
+import com.duckduckgo.common.ui.view.hideKeyboard
+import com.duckduckgo.common.ui.view.show
+import com.duckduckgo.common.ui.view.showKeyboard
+import com.duckduckgo.common.ui.viewbinding.viewBinding
 import com.duckduckgo.di.scopes.ActivityScope
+import com.duckduckgo.downloads.api.DownloadsFileActions
 import com.duckduckgo.downloads.api.model.DownloadItem
-import com.duckduckgo.mobile.android.ui.view.SearchBar
-import com.duckduckgo.mobile.android.ui.view.gone
-import com.duckduckgo.mobile.android.ui.view.hideKeyboard
-import com.duckduckgo.mobile.android.ui.view.show
-import com.duckduckgo.mobile.android.ui.view.showKeyboard
-import com.duckduckgo.mobile.android.ui.viewbinding.viewBinding
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import java.io.File
@@ -50,6 +53,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @InjectWith(ActivityScope::class)
+@ContributeToActivityStarter(DownloadsScreenNoParams::class)
 class DownloadsActivity : DuckDuckGoActivity() {
 
     private val viewModel: DownloadsViewModel by bindViewModel()
@@ -75,10 +79,8 @@ class DownloadsActivity : DuckDuckGoActivity() {
         setupToolbar(toolbar)
         setupRecyclerView()
 
-        viewModel.downloads()
-
         lifecycleScope.launch {
-            viewModel.viewState()
+            viewModel.viewState
                 .flowWithLifecycle(lifecycle, STARTED)
                 .collectLatest { render(it) }
         }
@@ -108,6 +110,7 @@ class DownloadsActivity : DuckDuckGoActivity() {
         return super.onPrepareOptionsMenu(menu)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (searchBar.isVisible) {
             hideSearchBar()

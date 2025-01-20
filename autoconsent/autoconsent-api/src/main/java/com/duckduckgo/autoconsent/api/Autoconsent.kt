@@ -42,6 +42,11 @@ interface Autoconsent {
     fun isSettingEnabled(): Boolean
 
     /**
+     * @return `true` if autoconsent is enabled in remote config and enabled by the user, `false` otherwise.
+     */
+    fun isAutoconsentEnabled(): Boolean
+
+    /**
      * This method sends and opt out message to autoconsent on the given [WebView] instance to set the opt out mode.
      */
     fun setAutoconsentOptOut(webView: WebView)
@@ -70,12 +75,12 @@ interface AutoconsentCallback {
     /**
      * This method is called whenever a popup is handled but not for the first time.
      */
-    fun onPopUpHandled()
+    fun onPopUpHandled(isCosmetic: Boolean)
 
     /**
      * This method is called whenever autoconsent has a result to be sent
      */
-    fun onResultReceived(consentManaged: Boolean, optOutFailed: Boolean, selfTestFailed: Boolean)
+    fun onResultReceived(consentManaged: Boolean, optOutFailed: Boolean, selfTestFailed: Boolean, isCosmetic: Boolean?)
 }
 
 /** List of [AutoconsentFeatureName] that belong to the Autoconsent feature */

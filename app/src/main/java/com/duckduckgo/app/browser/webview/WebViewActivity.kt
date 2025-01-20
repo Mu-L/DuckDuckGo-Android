@@ -17,21 +17,29 @@
 package com.duckduckgo.app.browser.webview
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
+import android.os.Message
 import android.view.MenuItem
+import android.webkit.WebChromeClient
 import android.webkit.WebSettings
+import android.webkit.WebView
+import com.duckduckgo.anvil.annotations.ContributeToActivityStarter
 import com.duckduckgo.anvil.annotations.InjectWith
+import com.duckduckgo.app.browser.BrowserActivity
 import com.duckduckgo.app.browser.BrowserWebViewClient
 import com.duckduckgo.app.browser.databinding.ActivityWebviewBinding
-import com.duckduckgo.app.browser.useragent.UserAgentProvider
-import com.duckduckgo.app.global.DuckDuckGoActivity
+import com.duckduckgo.app.pixels.AppPixelName
+import com.duckduckgo.app.statistics.pixels.Pixel
+import com.duckduckgo.browser.api.ui.BrowserScreens.WebViewActivityWithParams
+import com.duckduckgo.common.ui.DuckDuckGoActivity
+import com.duckduckgo.common.ui.viewbinding.viewBinding
 import com.duckduckgo.di.scopes.ActivityScope
-import com.duckduckgo.mobile.android.ui.viewbinding.viewBinding
+import com.duckduckgo.navigation.api.getActivityParams
+import com.duckduckgo.user.agent.api.UserAgentProvider
 import javax.inject.Inject
 
 @InjectWith(ActivityScope::class)
+@ContributeToActivityStarter(WebViewActivityWithParams::class)
 class WebViewActivity : DuckDuckGoActivity() {
 
     @Inject
@@ -39,6 +47,9 @@ class WebViewActivity : DuckDuckGoActivity() {
 
     @Inject
     lateinit var webViewClient: BrowserWebViewClient
+
+    @Inject
+    lateinit var pixel: Pixel
 
     private val binding: ActivityWebviewBinding by viewBinding()
 
@@ -52,11 +63,35 @@ class WebViewActivity : DuckDuckGoActivity() {
         setContentView(binding.root)
         setupToolbar(toolbar)
 
-        val url = intent.getStringExtra(URL_EXTRA)
-        title = intent.getStringExtra(TITLE_EXTRA)
+        val params = intent.getActivityParams(WebViewActivityWithParams::class.java)
+        val url = params?.url
+        title = params?.screenTitle.orEmpty()
+        val supportNewWindows = params?.supportNewWindows ?: false
 
         binding.simpleWebview.let {
             it.webViewClient = webViewClient
+
+            if (supportNewWindows) {
+                it.webChromeClient = object : WebChromeClient() {
+                    override fun onCreateWindow(
+                        view: WebView?,
+                        isDialog: Boolean,
+                        isUserGesture: Boolean,
+                        resultMsg: Message?,
+                    ): Boolean {
+                        pixel.fire(AppPixelName.DEDICATED_WEBVIEW_NEW_TAB_REQUESTED)
+                        view?.requestFocusNodeHref(resultMsg)
+                        val newWindowUrl = resultMsg?.data?.getString("url")
+                        if (newWindowUrl != null) {
+                            startActivity(BrowserActivity.intent(this@WebViewActivity, newWindowUrl))
+                            return true
+                        } else {
+                            pixel.fire(AppPixelName.DEDICATED_WEBVIEW_URL_EXTRACTION_FAILED)
+                        }
+                        return false
+                    }
+                }
+            }
 
             it.settings.apply {
                 userAgentString = userAgentProvider.userAgent()
@@ -67,7 +102,7 @@ class WebViewActivity : DuckDuckGoActivity() {
                 builtInZoomControls = true
                 displayZoomControls = false
                 mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
-                setSupportMultipleWindows(true)
+                setSupportMultipleWindows(supportNewWindows)
                 databaseEnabled = false
                 setSupportZoom(true)
             }
@@ -93,22 +128,6 @@ class WebViewActivity : DuckDuckGoActivity() {
             binding.simpleWebview.goBack()
         } else {
             super.onBackPressed()
-        }
-    }
-
-    companion object {
-        const val URL_EXTRA = "URL_EXTRA"
-        const val TITLE_EXTRA = "TITLE_EXTRA"
-
-        fun intent(
-            context: Context,
-            urlExtra: String,
-            titleExtra: String,
-        ): Intent {
-            val intent = Intent(context, WebViewActivity::class.java)
-            intent.putExtra(URL_EXTRA, urlExtra)
-            intent.putExtra(TITLE_EXTRA, titleExtra)
-            return intent
         }
     }
 }

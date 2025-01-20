@@ -16,7 +16,9 @@
 
 package com.duckduckgo.app.trackerdetection.api
 
+import com.duckduckgo.app.browser.Domain
 import com.duckduckgo.app.trackerdetection.model.*
+import com.duckduckgo.app.trackerdetection.model.Action.UNSUPPORTED
 import com.squareup.moshi.FromJson
 import java.util.*
 
@@ -48,7 +50,7 @@ class TdsJson {
             val domain = value.domain ?: return@mapNotNull null
             val default = value.default ?: return@mapNotNull null
             val owner = value.owner ?: return@mapNotNull null
-            key to TdsTracker(domain, default, owner.name, value.categories ?: emptyList(), value.rules ?: emptyList())
+            key to TdsTracker(Domain(domain), default, owner.name, value.categories ?: emptyList(), value.rules ?: emptyList())
         }.toMap()
     }
 
@@ -83,7 +85,9 @@ data class TdsJsonOwner(
 class ActionJsonAdapter {
 
     @FromJson
-    fun fromJson(actionName: String): Action? {
-        return Action.values().firstOrNull { it.name == actionName.uppercase(Locale.ROOT) }
+    fun fromJson(actionName: String): Action {
+        // If action not null but not supported, return unsupported.
+        // Unsupported actions are always ignored.
+        return Action.values().firstOrNull { it.name == actionName.uppercase(Locale.ROOT) } ?: UNSUPPORTED
     }
 }

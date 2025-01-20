@@ -25,8 +25,8 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.duckduckgo.anvil.annotations.ContributesWorker
-import com.duckduckgo.app.global.DispatcherProvider
 import com.duckduckgo.app.lifecycle.MainProcessLifecycleObserver
+import com.duckduckgo.common.utils.DispatcherProvider
 import com.duckduckgo.cookies.api.CookiesFeatureName
 import com.duckduckgo.di.scopes.AppScope
 import com.duckduckgo.feature.toggles.api.FeatureToggle
@@ -50,12 +50,8 @@ class FirstPartyCookiesModifierWorker(
 
     override suspend fun doWork(): Result {
         return withContext(dispatcherProvider.io()) {
-            val result = firstPartyCookiesModifier.expireFirstPartyCookies()
-            return@withContext if (result) {
-                Result.success()
-            } else {
-                Result.retry()
-            }
+            firstPartyCookiesModifier.expireFirstPartyCookies()
+            Result.success()
         }
     }
 }
@@ -78,12 +74,16 @@ class FirstPartyCookiesModifierWorkerScheduler @Inject constructor(
     override fun onStop(owner: LifecycleOwner) {
         if (isFeatureEnabled()) {
             workManager.enqueueUniquePeriodicWork(FIRST_PARTY_COOKIES_EXPIRE_WORKER_TAG, ExistingPeriodicWorkPolicy.REPLACE, workerRequest)
+        } else {
+            workManager.cancelAllWorkByTag(FIRST_PARTY_COOKIES_EXPIRE_WORKER_TAG)
         }
     }
 
     override fun onStart(owner: LifecycleOwner) {
         if (isFeatureEnabled()) {
             workManager.enqueueUniquePeriodicWork(FIRST_PARTY_COOKIES_EXPIRE_WORKER_TAG, ExistingPeriodicWorkPolicy.KEEP, workerRequest)
+        } else {
+            workManager.cancelAllWorkByTag(FIRST_PARTY_COOKIES_EXPIRE_WORKER_TAG)
         }
     }
 

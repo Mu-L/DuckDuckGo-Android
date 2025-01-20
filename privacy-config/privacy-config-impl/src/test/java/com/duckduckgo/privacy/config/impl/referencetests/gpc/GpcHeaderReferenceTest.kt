@@ -16,7 +16,8 @@
 
 package com.duckduckgo.privacy.config.impl.referencetests.gpc
 
-import com.duckduckgo.app.FileUtilities
+import com.duckduckgo.app.privacy.db.UserAllowListRepository
+import com.duckduckgo.common.test.FileUtilities
 import com.duckduckgo.feature.toggles.api.FeatureToggle
 import com.duckduckgo.privacy.config.api.Gpc
 import com.duckduckgo.privacy.config.api.GpcException
@@ -30,7 +31,6 @@ import com.duckduckgo.privacy.config.store.GpcExceptionEntity
 import com.duckduckgo.privacy.config.store.features.gpc.GpcRepository
 import com.duckduckgo.privacy.config.store.features.unprotectedtemporary.UnprotectedTemporaryRepository
 import com.duckduckgo.privacy.config.store.toGpcException
-import com.duckduckgo.privacy.config.store.toUnprotectedTemporaryException
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import java.util.concurrent.CopyOnWriteArrayList
@@ -48,6 +48,7 @@ class GpcHeaderReferenceTest(private val testCase: TestCase) {
     private val mockUnprotectedTemporaryRepository: UnprotectedTemporaryRepository = mock()
     private val mockGpcRepository: GpcRepository = mock()
     private val mockFeatureToggle: FeatureToggle = mock()
+    private val mockUserAllowListRepository: UserAllowListRepository = mock()
     lateinit var gpc: Gpc
 
     companion object {
@@ -71,7 +72,7 @@ class GpcHeaderReferenceTest(private val testCase: TestCase) {
     fun setup() {
         whenever(mockGpcRepository.isGpcEnabled()).thenReturn(testCase.gpcUserSettingOn)
         mockGpcPrivacyConfig()
-        gpc = RealGpc(mockFeatureToggle, mockGpcRepository, RealUnprotectedTemporary(mockUnprotectedTemporaryRepository))
+        gpc = RealGpc(mockFeatureToggle, mockGpcRepository, RealUnprotectedTemporary(mockUnprotectedTemporaryRepository), mockUserAllowListRepository)
     }
 
     @Test
@@ -101,9 +102,7 @@ class GpcHeaderReferenceTest(private val testCase: TestCase) {
         }
 
         val isEnabled = gpcFeature?.state == "enabled"
-        val exceptionsUnprotectedTemporary = CopyOnWriteArrayList(
-            config?.unprotectedTemporary?.map { it.toUnprotectedTemporaryException() } ?: emptyList(),
-        )
+        val exceptionsUnprotectedTemporary = CopyOnWriteArrayList(config?.unprotectedTemporary.orEmpty())
 
         whenever(mockFeatureToggle.isFeatureEnabled(PrivacyFeatureName.GpcFeatureName.value, isEnabled)).thenReturn(isEnabled)
         whenever(mockGpcRepository.exceptions).thenReturn(CopyOnWriteArrayList(gpcExceptions))
